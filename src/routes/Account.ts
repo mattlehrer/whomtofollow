@@ -3,13 +3,13 @@ export type Account = {
 	id: string;
 	username: string;
 	acct: string; // The Webfinger account URI. Equal to username for local users, or username@domain for remote users.
-	url: URL;
+	url: string;
 	display_name: string;
 	note: string;
-	avatar: URL;
-	avatar_static: URL;
-	header: URL;
-	header_static: URL;
+	avatar: string;
+	avatar_static: string;
+	header: string;
+	header_static: string;
 	locked: boolean;
 	fields: Field[];
 	emojis: CustomEmoji[];
@@ -37,5 +37,5 @@ export type Field = {
 
 export type CustomEmoji = {
 	shortcode: string;
-	url: URL;
+	string: string;
 };

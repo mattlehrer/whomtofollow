@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "^1.0.5",
 		"@tailwindcss/forms": "^0.5.3",
 		"@types/debounce": "^1.2.1",
+		"@types/sanitize-html": "^2.8.0",
 		"@typescript-eslint/eslint-plugin": "^5.48.0",
 		"@typescript-eslint/parser": "^5.48.0",
 		"autoprefixer": "^10.4.13",
@@ -41,6 +42,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"debounce": "^1.2.1"
+		"debounce": "^1.2.1",
+		"sanitize-html": "^2.8.1"
 	}
 }

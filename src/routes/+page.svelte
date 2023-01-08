@@ -1,19 +1,21 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
 	import type { Account } from './Account';
+	import { accountData } from './data';
+	import FollowSuggestion from './FollowSuggestion.svelte';
 
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
 	const MAX_FOLLOWERS_TO_FETCH = 5000;
 
-	let account = 'mattlehrer@mastodon.social';
+	let account = 'matt@definitely.social';
 	let host: string;
 	let isLoading = false;
 	let errors: string[] = [];
-	const accountData = new Map<string, Account>();
 	let dontSuggest = new Set<string>();
 	let count = 0;
 	let accountsYouMightFollow: Account[] = [];
 	$: if (count)
-		accountsYouMightFollow = [...accountData.entries()]
+		accountsYouMightFollow = [...$accountData.entries()]
 			.filter(([acct]) => !dontSuggest.has(acct))
 			.filter(([, a]) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST)
 			.map((a) => a[1])
@@ -33,9 +35,9 @@
 	}
 
 	async function getAccountInfo(acct: Account['acct']): Promise<Account> {
-		if (accountData.has(acct)) {
+		if ($accountData.has(acct)) {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			return accountData.get(acct)!;
+			return $accountData.get(acct)!;
 		}
 		const domain = getDomain(acct);
 		let accountInfo: Account;
@@ -46,7 +48,7 @@
 			while (accountInfo.moved) {
 				accountInfo = await getAccountInfo(accountInfo.moved.acct);
 			}
-			accountData.set(acct, { ...accountInfo, followed_by: new Set() });
+			$accountData.set(acct, { ...accountInfo, followed_by: new Set() });
 		} catch (e) {
 			console.log({ e });
 			throw new Error(`Error getting ${acct} info`);
@@ -60,11 +62,6 @@
 		if (!accountInfo) {
 			return [];
 		}
-		if (!accountInfo.discoverable) {
-			// errors = [`Account ${acct} is not discoverable`, ...errors];
-			console.log(`Account ${acct} has opted out of discovery.`);
-			return [];
-		}
 
 		let page:
 			| string
@@ -75,6 +72,7 @@
 			const response = await fetch(page);
 
 			if (!response.ok) {
+				// TODO: if cors error, try via server?
 				errors = [`Error getting ${acct}'s follows'`, ...errors];
 			}
 			const json = (await response.json()) as Account[];
@@ -87,10 +85,10 @@
 			page = getNextPage(response.headers.get('Link'));
 		}
 		for (const f of follows) {
-			if (accountData.has(f.acct)) {
-				accountData.get(f.acct)?.followed_by.add(acct);
+			if ($accountData.has(f.acct)) {
+				$accountData.get(f.acct)?.followed_by.add(acct);
 			} else {
-				accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
+				$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
 			}
 			count++;
 		}
@@ -102,6 +100,11 @@
 			return;
 		}
 		isLoading = true;
+		dontSuggest = new Set<string>();
+		accountsYouMightFollow = [];
+		count = 0;
+		// TODO: reuse cache of account data
+		$accountData = new Map<string, Account>();
 
 		// save host for follow links
 		host = getDomain(account);
@@ -133,8 +136,8 @@
 	}
 </script>
 
-<main class="">
-	<form class="max-w-2xl px-4 pt-8 sm:p-16">
+<main class="max-w-4xl pt-8 sm:p-16">
+	<form class="max-w-2xl px-4">
 		<label for="account" class="ml-px block pl-4 text-3xl sm:text-4xl font-medium text-brand-700"
 			>Your Fediverse Account:</label
 		>
@@ -155,22 +158,24 @@
 			on:click|preventDefault={search}
 			disabled={isLoading}
 			type="button"
-			class="mt-6 border-transparent text-white inline-flex items-center rounded-full border bg-brand-600 px-4 py-2 text-lg font-medium shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 text-brand-100 disabled:opacity-25"
+			class="mt-6 border-transparent  inline-flex items-center rounded-full border bg-brand-600 px-4 py-2 text-lg font-medium shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 text-brand-100 disabled:opacity-25"
 			>Find people you may know</button
 		>
 	</form>
 
 	<div class="my-8">
-		<!-- {accountsYouMightFollow.length} -->
-		<ul>
-			{#each accountsYouMightFollow as account}
-				<li>
-					{account.acct} - {[...account.followed_by].join(', ')} - followers: {account.followers_count}
+		<ul class="divide-y-2">
+			{#each accountsYouMightFollow as account (account.acct)}
+				<li transition:slide>
+					<!-- {account.acct} - {[...account.followed_by].join(', ')} - followers: {account.followers_count} -->
+					<FollowSuggestion {account} {host} />
 				</li>
 			{/each}
 		</ul>
-	</div>
-	<div class="mt-8">
-		{JSON.stringify(errors)}
+		{#if errors.length}
+			<div class="mt-8">
+				{JSON.stringify(errors)}
+			</div>
+		{/if}
 	</div>
 </main>
