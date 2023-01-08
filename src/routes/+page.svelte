@@ -4,6 +4,21 @@
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 
+	// TODO: handle form submission
+
+	// TODO: loading indicator
+	// absolute positioned line across the top?
+	// maybe top and left side moving to meet at bottom right?
+	// red to orange to green gradient
+
+	// TODO: clean up error display
+
+	// TODO: add hero
+	// TODO: add footer
+	// TODO: add favicon
+	// TODO: add og image/description
+	// TODO: add FAQ
+
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
 	const MAX_FOLLOWERS_TO_FETCH = 5000;
 
@@ -136,7 +151,7 @@
 	}
 </script>
 
-<main class="max-w-4xl pt-8 sm:p-16">
+<main class="max-w-4xl pt-8 sm:p-8 md:p-16">
 	<form class="max-w-2xl px-4">
 		<label for="account" class="ml-px block pl-4 text-3xl sm:text-4xl font-medium text-brand-700"
 			>Your Fediverse Account:</label
