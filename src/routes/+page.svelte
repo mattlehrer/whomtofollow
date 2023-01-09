@@ -4,25 +4,10 @@
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 
-	// TODO: handle form submission
-
-	// TODO: loading indicator
-	// absolute positioned line across the top?
-	// maybe top and left side moving to meet at bottom right?
-	// red to orange to green gradient
-
-	// TODO: clean up error display
-
-	// TODO: add hero
-	// TODO: add footer
-	// TODO: add favicon
-	// TODO: add og image/description
-	// TODO: add FAQ
-
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
 	const MAX_FOLLOWERS_TO_FETCH = 5000;
 
-	let account = 'matt@definitely.social';
+	let account: string;
 	let host: string;
 	let isLoading = false;
 	let errors: string[] = [];
