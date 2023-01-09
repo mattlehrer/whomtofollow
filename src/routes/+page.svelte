@@ -65,7 +65,7 @@
 
 		let page:
 			| string
-			| null = `https://${domain}/api/v1/accounts/${accountInfo.id}/following?limit=80`;
+			| undefined = `https://${domain}/api/v1/accounts/${accountInfo.id}/following?limit=80`;
 
 		let follows: Account[] = [];
 		while (page && follows.length < MAX_FOLLOWERS_TO_FETCH) {
@@ -82,7 +82,7 @@
 					: { ...follow, acct: `${follow.acct}@${domain}` },
 			);
 			follows = [...follows, ...newFollows];
-			page = getNextPage(response.headers.get('Link'));
+			page = getNextPage(response.headers.get('Link') ?? undefined);
 		}
 		for (const f of follows) {
 			if ($accountData.has(f.acct)) {
@@ -118,13 +118,12 @@
 		isLoading = false;
 	}
 
-	function getNextPage(linkHeader: string | null): string | null {
-		if (!linkHeader) {
-			return null;
-		}
+	function getNextPage(linkHeader: string | undefined): string | undefined {
+		if (!linkHeader) return;
+
 		// https://docs.joinmastodon.org/api/guidelines/#pagination
 		const match = linkHeader.match(/<(.+)>; rel="next"/);
-		return match?.[1] ?? null;
+		return match?.[1];
 	}
 
 	async function fulfilledValues<T>(promises: Promise<T>[]) {
@@ -135,6 +134,11 @@
 		});
 	}
 </script>
+
+<svelte:head>
+	<title>Whom to Follow | A Fediverse PYMK</title>
+	<meta name="description" content="Find people to follow on the Fediverse" />
+</svelte:head>
 
 <main class="max-w-4xl pt-8 sm:p-8 md:p-16">
 	<form class="max-w-2xl px-4">
