@@ -5,7 +5,7 @@
 	import FollowSuggestion from './FollowSuggestion.svelte';
 
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
-	const MAX_FOLLOWERS_TO_FETCH = 5000;
+	const MAX_FOLLOWERS_TO_FETCH = 1000;
 
 	let account: string;
 	let host: string;
@@ -51,7 +51,6 @@
 				console.log({ accountInfoRes });
 				if (accountInfoRes.status === 404 && accountInfoRes.type === 'cors') {
 					accountInfoRes = await fetch(`/api/acct/${acct}`);
-					console.log('cors', { accountInfoRes });
 				}
 			}
 			if (!accountInfoRes.ok) {
