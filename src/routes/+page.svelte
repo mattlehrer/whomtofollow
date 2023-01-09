@@ -14,6 +14,8 @@
 	let dontSuggest = new Set<string>();
 	let count = 0;
 	let accountsYouMightFollow: Account[] = [];
+
+	// not sure of a better way to make the accountData map reactive
 	$: if (count)
 		accountsYouMightFollow = [...$accountData.entries()]
 			.filter(([acct]) => !dontSuggest.has(acct))
@@ -74,6 +76,7 @@
 			if (!response.ok) {
 				// TODO: if cors error, try via server?
 				errors = [`Error getting ${acct}'s follows'`, ...errors];
+				return follows;
 			}
 			const json = (await response.json()) as Account[];
 			const newFollows = json.map((follow: Account) =>
@@ -109,12 +112,16 @@
 		// save host for follow links
 		host = getDomain(account);
 
-		const following = await getFollows(account);
-		dontSuggest = new Set<string>([...following.map((f) => f.acct), account.replace(/^@/, '')]);
+		try {
+			const following = await getFollows(account);
+			dontSuggest = new Set<string>([...following.map((f) => f.acct), account.replace(/^@/, '')]);
 
-		// get 2nd level follows
-		const followingPromises = following.map((f) => getFollows(f.acct));
-		await fulfilledValues(followingPromises);
+			// get 2nd level follows
+			const followingPromises = following.map((f) => getFollows(f.acct));
+			await fulfilledValues(followingPromises);
+		} catch (error) {
+			console.log({ error });
+		}
 		isLoading = false;
 	}
 
