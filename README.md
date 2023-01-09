@@ -1,22 +1,22 @@
 # Fediverse PYMK
 
-[ ] TODO: handle form submission
+- [ ] TODO: handle form submission
 
-[ ] TODO: loading indicator
+- [ ] TODO: loading indicator
 absolute positioned line across the top?
 maybe top and left side moving to meet at bottom right?
 red to orange to green gradient
 
-[ ] TODO: clean up error display
+- [ ] TODO: clean up error display
 
-[ ] TODO: add hero
+- [ ] TODO: add hero
 
-[ ] TODO: add footer
+- [ ] TODO: add footer
 
-[ ] TODO: add favicon
+- [ ] TODO: add favicon
 
-[ ] TODO: add og image/description
+- [ ] TODO: add og image/description
 
-[ ] TODO: add FAQ
+- [ ] TODO: add FAQ
 
-[ ] TODO: readme
+- [ ] TODO: readme
