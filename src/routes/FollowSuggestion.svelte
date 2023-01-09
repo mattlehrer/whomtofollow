@@ -5,9 +5,14 @@
 
 	export let account: Account;
 	export let host: string;
+
+	const followers =
+		account.followed_by.size > 4
+			? [...account.followed_by].sort(() => Math.random() - 0.5).slice(0, 4)
+			: [...account.followed_by];
 </script>
 
-<div class="block hover:bg-brand-100 sm:rounded-lg overflow-hidden">
+<div class="block hover:bg-brand-100 overflow-hidden">
 	<div class="flex items-start px-4 py-4 sm:px-6 sm:mx-0 flex-col sm:flex-row">
 		<div class="w-full flex justify-between items-center sm:items-start">
 			<div class="flex-shrink-0">
@@ -60,7 +65,7 @@
 					<div class="mt-3 flex">
 						<div class="flex-shrink-0">
 							<div class="flex -space-x-1 overflow-hidden">
-								{#each [...account.followed_by].sort(() => Math.random() - 0.5).slice(0, 4) as f}
+								{#each followers as f}
 									{@const follower = $accountData?.get(f)}
 									<img
 										class="inline-block h-8 w-8 rounded-full ring-2 ring-brand-50 bg-brand-50"
