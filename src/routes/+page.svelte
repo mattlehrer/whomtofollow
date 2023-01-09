@@ -23,7 +23,8 @@
 			.map((a) => a[1])
 			.sort(
 				(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
-			);
+			)
+			.slice(0, 500);
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 
@@ -44,7 +45,19 @@
 		const domain = getDomain(acct);
 		let accountInfo: Account;
 		try {
-			const accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
+			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
+
+			if (!accountInfoRes.ok) {
+				console.log({ accountInfoRes });
+				if (accountInfoRes.status === 404 && accountInfoRes.type === 'cors') {
+					accountInfoRes = await fetch(`/api/acct/${acct}`);
+					console.log('cors', { accountInfoRes });
+				}
+			}
+			if (!accountInfoRes.ok) {
+				throw new Error(accountInfoRes.statusText);
+			}
+
 			accountInfo = await accountInfoRes.json();
 
 			while (accountInfo.moved) {
@@ -91,6 +104,13 @@
 			if ($accountData.has(f.acct)) {
 				$accountData.get(f.acct)?.followed_by.add(acct);
 			} else {
+				if (!f.id.match(/^[0-9]+$/)) {
+					// not a mastodon ID, likely pleroma, try finding the mastodon ID in the avatar S3 URL
+					const match = f.avatar.match(/accounts\/avatars\/([0-9/]+)\/original/);
+					if (match) {
+						f.id = match[1].replaceAll('/', '');
+					}
+				}
 				$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
 			}
 			count++;
