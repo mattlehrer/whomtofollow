@@ -170,7 +170,7 @@
 <main>
 	{#if !accountsYouMightFollow.length}
 		<div class="p-4 sm:p-8 md:p-16 mt-4">
-			<form class="max-w-2xl sm:px-4">
+			<form class="max-w-2xl sm:px-4" on:submit={search}>
 				<label
 					for="account"
 					class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
@@ -204,7 +204,7 @@
 			<div class="p-4 sm:p-8 md:p-16 pb-8 mt-4" slot="header">
 				{#if accountsYouMightFollow.length}
 					<!-- <div class="sm:p-8 md:p-16"> -->
-					<form class="max-w-2xl sm:px-4">
+					<form class="max-w-2xl sm:px-4" on:submit={search}>
 						<label
 							for="account"
 							class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
