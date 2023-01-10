@@ -169,7 +169,7 @@
 
 <main>
 	{#if !accountsYouMightFollow.length}
-		<div class="p-4 sm:p-8 md:p-16 mt-4">
+		<div class="mt-4 p-4 sm:p-8 md:p-16">
 			<form class="max-w-2xl sm:px-4" on:submit={search}>
 				<label
 					for="account"
@@ -201,7 +201,7 @@
 	{/if}
 	{#if accountsYouMightFollow.length}
 		<VirtualScroll data={accountsYouMightFollow} key="id" let:data>
-			<div class="p-4 sm:p-8 md:p-16 pb-8 mt-4" slot="header">
+			<div class="mt-4 p-4 pb-8 sm:p-8 md:p-16" slot="header">
 				{#if accountsYouMightFollow.length}
 					<!-- <div class="sm:p-8 md:p-16"> -->
 					<form class="max-w-2xl sm:px-4" on:submit={search}>
