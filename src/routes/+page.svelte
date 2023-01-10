@@ -237,7 +237,7 @@
 
 			<FollowSuggestion account={data} {host} />
 
-			<div slot="footer">
+			<div class="max-w-4xl p-4 sm:p-8 md:p-16" slot="footer">
 				{#if errors.length}
 					<div class="mt-8">
 						{JSON.stringify(errors)}
