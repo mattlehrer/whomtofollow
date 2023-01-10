@@ -2,10 +2,7 @@
 
 - [x] TODO: handle form submission
 
-- [ ] TODO: loading indicator
-      absolute positioned line across the top?
-      maybe top and left side moving to meet at bottom right?
-      red to orange to green gradient
+- [x] TODO: loading indicator
 
 - [x] TODO: clean up error display
 

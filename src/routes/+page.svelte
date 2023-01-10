@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Errors from './Errors.svelte';
-
 	import VirtualScroll from 'svelte-virtual-scroll-list';
+	import { fade } from 'svelte/transition';
 	import type { Account } from './Account';
+	import Errors from './Errors.svelte';
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
@@ -147,7 +147,7 @@
 			// get 2nd level follows
 			const followingPromises = following
 				.sort(() => Math.random() - 0.5)
-				.map((f) => getFollows(f.acct));
+				.map((f) => trackProgress(getFollows(f.acct)));
 			await fulfilledValues(followingPromises);
 		} catch (error) {
 			console.log({ error });
@@ -169,6 +169,20 @@
 				.filter((result) => result.status === 'fulfilled')
 				.map((result) => (result as PromiseFulfilledResult<T>).value);
 		});
+	}
+
+	let pendingFetches = 0;
+	async function trackProgress<T>(p: Promise<T>): Promise<T> {
+		pendingFetches++;
+		return p.finally(() => {
+			pendingFetches--;
+		});
+	}
+
+	let progressNode: HTMLElement;
+	$: if (progressNode && pendingFetches) {
+		const pctDone = (100 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
+		progressNode.style.setProperty('--progress', pctDone + '%');
 	}
 </script>
 
@@ -251,10 +265,25 @@
 		</VirtualScroll>
 	{/if}
 </main>
+{#if isLoading}
+	<div out:fade={{ duration: 2000 }} bind:this={progressNode} class="progress" />
+{/if}
 
 <style>
 	main {
 		height: 100dvh;
 		min-height: 500px;
+	}
+
+	.progress {
+		display: block;
+		width: 100%;
+		height: 10px;
+		position: fixed;
+		z-index: 50;
+		background: linear-gradient(to right, #0615ea var(--progress), transparent 0);
+		background-repeat: no-repeat;
+		top: 0;
+		left: 0;
 	}
 </style>
