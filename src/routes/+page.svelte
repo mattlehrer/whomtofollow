@@ -5,11 +5,14 @@
 	import type { Account } from './Account';
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
 
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
 	const MAX_FOLLOWERS_TO_FETCH = 1000;
 
-	let account: string;
+	let account: string = data.account;
 	let host: string;
 	let isLoading = false;
 	let errors: Record<string, string[]> = {};
