@@ -10,7 +10,7 @@
 
 	const followers =
 		account.followed_by.size > MAX_FOLLOWER_AVATARS
-			? [...account.followed_by].sort(() => Math.random() - 0.5).slice(0, 4)
+			? [...account.followed_by].sort(() => Math.random() - 0.5).slice(0, MAX_FOLLOWER_AVATARS)
 			: [...account.followed_by];
 </script>
 
