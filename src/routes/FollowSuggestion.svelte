@@ -179,3 +179,9 @@
 		</div>
 	</div>
 </article>
+
+<style>
+	:global(.virtual-scroll-item > article) {
+		@apply border-b border-slate-900 border-opacity-25;
+	}
+</style>
