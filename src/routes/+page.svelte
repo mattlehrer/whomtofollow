@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Errors from './Errors.svelte';
+
 	import VirtualScroll from 'svelte-virtual-scroll-list';
 	import type { Account } from './Account';
 	import { accountData } from './data';
@@ -10,7 +12,7 @@
 	let account: string;
 	let host: string;
 	let isLoading = false;
-	let errors: string[] = [];
+	let errors: Record<string, string[]> = {};
 	let dontSuggest = new Set<string>();
 	let count = 0;
 	let accountsYouMightFollow: Account[] = [];
@@ -86,7 +88,12 @@
 
 			if (!response.ok) {
 				// TODO: if cors error, try via server?
-				errors = [`Error getting ${acct}'s follows'`, ...errors];
+				const status = String(response.status);
+				if (errors[status]) {
+					errors[status] = [...errors[status], acct];
+				} else {
+					errors[status] = [acct];
+				}
 				return follows;
 			}
 			const json = (await response.json()) as Account[];
@@ -202,46 +209,40 @@
 	{#if accountsYouMightFollow.length}
 		<VirtualScroll data={accountsYouMightFollow} key="id" let:data>
 			<div class="mt-4 p-4 pb-8 sm:p-8 md:p-16" slot="header">
-				{#if accountsYouMightFollow.length}
-					<!-- <div class="sm:p-8 md:p-16"> -->
-					<form class="max-w-2xl sm:px-4" on:submit={search}>
-						<label
-							for="account"
-							class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
-							>Your Fediverse Account:</label
-						>
-						<div class="mt-3">
-							<input
-								type="text"
-								name="account"
-								id="account"
-								required
-								pattern={AccountRegex.source}
-								title="Please enter a valid account including the username, the @ symbol, and the host domain."
-								bind:value={account}
-								class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
-								placeholder="gargron@mastodon.social"
-							/>
-						</div>
-						<button
-							on:click|preventDefault={search}
-							disabled={isLoading}
-							type="button"
-							class="mt-6 inline-flex  items-center rounded-full border border-transparent bg-brand-600 px-4 py-2 text-lg font-medium text-brand-100 shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25"
-							>Find people you may know</button
-						>
-					</form>
-					<!-- </div> -->
-				{/if}
+				<form class="max-w-2xl sm:px-4" on:submit={search}>
+					<label
+						for="account"
+						class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
+						>Your Fediverse Account:</label
+					>
+					<div class="mt-3">
+						<input
+							type="text"
+							name="account"
+							id="account"
+							required
+							pattern={AccountRegex.source}
+							title="Please enter a valid account including the username, the @ symbol, and the host domain."
+							bind:value={account}
+							class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+							placeholder="gargron@mastodon.social"
+						/>
+					</div>
+					<button
+						on:click|preventDefault={search}
+						disabled={isLoading}
+						type="button"
+						class="mt-6 inline-flex  items-center rounded-full border border-transparent bg-brand-600 px-4 py-2 text-lg font-medium text-brand-100 shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25"
+						>Find people you may know</button
+					>
+				</form>
 			</div>
 
 			<FollowSuggestion account={data} {host} />
 
 			<div class="max-w-4xl p-4 sm:p-8 md:p-16" slot="footer">
-				{#if errors.length}
-					<div class="mt-8">
-						{JSON.stringify(errors)}
-					</div>
+				{#if Object.keys(errors).length}
+					<Errors {errors} />
 				{/if}
 			</div>
 		</VirtualScroll>
