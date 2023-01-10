@@ -23,6 +23,7 @@ specifiers:
   svelte: ^3.55.0
   svelte-check: ^2.10.3
   svelte-preprocess: ^4.10.7
+  svelte-virtual-scroll-list: ^1.1.0
   tailwindcss: ^3.2.4
   tslib: ^2.4.1
   typescript: ^4.9.4
@@ -54,6 +55,7 @@ devDependencies:
   svelte: 3.55.0
   svelte-check: 2.10.3_7tgmgw23w4ankk7vtabgm5xtbu
   svelte-preprocess: 4.10.7_4pbnl6cqae4gmabfifuvcfaifu
+  svelte-virtual-scroll-list: 1.1.0_svelte@3.55.0
   tailwindcss: 3.2.4_postcss@8.4.20
   tslib: 2.4.1
   typescript: 4.9.4
@@ -2035,6 +2037,14 @@ packages:
       strip-indent: 3.0.0
       svelte: 3.55.0
       typescript: 4.9.4
+    dev: true
+
+  /svelte-virtual-scroll-list/1.1.0_svelte@3.55.0:
+    resolution: {integrity: sha512-GFaBhD9izv77xgJTyFMD1MP+ElGMUGMC9CDCM+uX9hkZIYipNS6u8oDMYDGwCXUw7QGEihU4yLmBvBSeBp78uw==}
+    peerDependencies:
+      svelte: ^3.0.0
+    dependencies:
+      svelte: 3.55.0
     dev: true
 
   /svelte/3.55.0:

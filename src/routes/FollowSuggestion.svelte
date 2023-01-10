@@ -6,13 +6,15 @@
 	export let account: Account;
 	export let host: string;
 
+	const MAX_FOLLOWER_AVATARS = 10;
+
 	const followers =
-		account.followed_by.size > 4
+		account.followed_by.size > MAX_FOLLOWER_AVATARS
 			? [...account.followed_by].sort(() => Math.random() - 0.5).slice(0, 4)
 			: [...account.followed_by];
 </script>
 
-<div class="block max-w-3xl overflow-hidden hover:bg-brand-100 sm:mx-8 md:mx-16">
+<article class="block max-w-3xl overflow-hidden hover:bg-brand-100 sm:mx-8 md:mx-16">
 	<div class="flex flex-col items-start p-4 sm:mx-0 sm:flex-row sm:p-6">
 		<div class="flex w-full items-center justify-between sm:items-start">
 			<div class="flex-shrink-0">
@@ -153,7 +155,7 @@
 				<div class="mt-3 flex">
 					<div class="flex-shrink-0">
 						<div class="flex -space-x-1 overflow-hidden">
-							{#each [...account.followed_by].sort(() => Math.random() - 0.5).slice(0, 4) as f}
+							{#each followers as f}
 								{@const follower = $accountData?.get(f)}
 								<img
 									class="inline-block h-8 w-8 rounded-full bg-white ring-2 ring-brand-50"
@@ -163,11 +165,11 @@
 									title={`${follower?.display_name} | ${follower?.acct}`}
 								/>
 							{/each}
-							{#if account.followed_by.size > 4}
+							{#if account.followed_by.size > MAX_FOLLOWER_AVATARS}
 								<div
 									class=" flex h-8 w-8 items-center justify-center rounded-full bg-accent-600 text-sm text-accent-100 ring-2 ring-brand-50"
 								>
-									+{account.followed_by.size - 4}
+									+{account.followed_by.size - MAX_FOLLOWER_AVATARS}
 								</div>
 							{/if}
 						</div>
@@ -176,4 +178,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</article>

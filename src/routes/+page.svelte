@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
+	import VirtualScroll from 'svelte-virtual-scroll-list';
 	import type { Account } from './Account';
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
@@ -16,11 +16,12 @@
 	let accountsYouMightFollow: Account[] = [];
 
 	// not sure of a better way to make the accountData map reactive
+	// $: if (!isLoading)
 	$: if (count)
 		accountsYouMightFollow = [...$accountData.entries()]
 			.filter(([acct]) => !dontSuggest.has(acct))
-			.filter(([, a]) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST)
 			.map((a) => a[1])
+			.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST)
 			.sort(
 				(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
 			)
@@ -48,7 +49,6 @@
 			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
 
 			if (!accountInfoRes.ok) {
-				console.log({ accountInfoRes });
 				if (accountInfoRes.status === 404 && accountInfoRes.type === 'cors') {
 					accountInfoRes = await fetch(`/api/acct/${acct}`);
 				}
@@ -166,46 +166,90 @@
 	<meta name="description" content="Find people to follow on the Fediverse" />
 </svelte:head>
 
-<main class="max-w-4xl pt-8 sm:p-8 md:p-16">
-	<form class="max-w-2xl px-4">
-		<label for="account" class="ml-px block pl-4 text-3xl sm:text-4xl font-medium text-brand-700"
-			>Your Fediverse Account:</label
-		>
-		<div class="mt-3">
-			<input
-				type="text"
-				name="account"
-				id="account"
-				required
-				pattern={AccountRegex.source}
-				title="Please enter a valid account including the username, the @ symbol, and the host domain."
-				bind:value={account}
-				class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
-				placeholder="gargron@mastodon.social"
-			/>
+<main>
+	{#if !accountsYouMightFollow.length}
+		<div class="p-4 sm:p-8 md:p-16 pb-0 mt-4">
+			<form class="max-w-2xl sm:px-4">
+				<label
+					for="account"
+					class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
+					>Your Fediverse Account:</label
+				>
+				<div class="mt-3">
+					<input
+						type="text"
+						name="account"
+						id="account"
+						required
+						pattern={AccountRegex.source}
+						title="Please enter a valid account including the username, the @ symbol, and the host domain."
+						bind:value={account}
+						class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+						placeholder="gargron@mastodon.social"
+					/>
+				</div>
+				<button
+					on:click|preventDefault={search}
+					disabled={isLoading}
+					type="button"
+					class="mt-6 inline-flex  items-center rounded-full border border-transparent bg-brand-600 px-4 py-2 text-lg font-medium text-brand-100 shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25"
+					>Find people you may know</button
+				>
+			</form>
 		</div>
-		<button
-			on:click|preventDefault={search}
-			disabled={isLoading}
-			type="button"
-			class="mt-6 border-transparent  inline-flex items-center rounded-full border bg-brand-600 px-4 py-2 text-lg font-medium shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 text-brand-100 disabled:opacity-25"
-			>Find people you may know</button
-		>
-	</form>
-
-	<div class="my-8">
-		<ul class="divide-y-2">
-			{#each accountsYouMightFollow as account (account.acct)}
-				<li transition:slide>
-					<!-- {account.acct} - {[...account.followed_by].join(', ')} - followers: {account.followers_count} -->
-					<FollowSuggestion {account} {host} />
-				</li>
-			{/each}
-		</ul>
-		{#if errors.length}
-			<div class="mt-8">
-				{JSON.stringify(errors)}
+	{/if}
+	{#if accountsYouMightFollow.length}
+		<VirtualScroll data={accountsYouMightFollow} key="id" let:data>
+			<div class="p-4 sm:p-8 md:p-16" slot="header">
+				{#if accountsYouMightFollow.length}
+					<div class="sm:p-8 md:p-16">
+						<form class="max-w-2xl sm:px-4">
+							<label
+								for="account"
+								class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
+								>Your Fediverse Account:</label
+							>
+							<div class="mt-3">
+								<input
+									type="text"
+									name="account"
+									id="account"
+									required
+									pattern={AccountRegex.source}
+									title="Please enter a valid account including the username, the @ symbol, and the host domain."
+									bind:value={account}
+									class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+									placeholder="gargron@mastodon.social"
+								/>
+							</div>
+							<button
+								on:click|preventDefault={search}
+								disabled={isLoading}
+								type="button"
+								class="mt-6 inline-flex  items-center rounded-full border border-transparent bg-brand-600 px-4 py-2 text-lg font-medium text-brand-100 shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25"
+								>Find people you may know</button
+							>
+						</form>
+					</div>
+				{/if}
 			</div>
-		{/if}
-	</div>
+
+			<FollowSuggestion account={data} {host} />
+
+			<div slot="footer">
+				{#if errors.length}
+					<div class="mt-8">
+						{JSON.stringify(errors)}
+					</div>
+				{/if}
+			</div>
+		</VirtualScroll>
+	{/if}
 </main>
+
+<style>
+	main {
+		height: 100dvh;
+		min-height: 500px;
+	}
+</style>
