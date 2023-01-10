@@ -16,7 +16,6 @@
 	let accountsYouMightFollow: Account[] = [];
 
 	// not sure of a better way to make the accountData map reactive
-	// $: if (!isLoading)
 	$: if (count)
 		accountsYouMightFollow = [...$accountData.entries()]
 			.filter(([acct]) => !dontSuggest.has(acct))
@@ -136,7 +135,9 @@
 			dontSuggest = new Set<string>([...following.map((f) => f.acct), account.replace(/^@/, '')]);
 
 			// get 2nd level follows
-			const followingPromises = following.map((f) => getFollows(f.acct));
+			const followingPromises = following
+				.sort(() => Math.random() - 0.5)
+				.map((f) => getFollows(f.acct));
 			await fulfilledValues(followingPromises);
 		} catch (error) {
 			console.log({ error });
