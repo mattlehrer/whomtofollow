@@ -15,11 +15,14 @@
 	{#if showErrors}
 		{#each Object.entries(errors) as [status, accts]}
 			<p class="">
+				We received
 				<a
+					class="font-semibold"
 					target="_blank"
 					rel="noreferrer"
 					href={`https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/${status}`}
-					>{status} error</a
+				>
+					status {status} error{accts.length > 1 ? 's' : ''}</a
 				>
 				for {new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(accts)}
 			</p>
