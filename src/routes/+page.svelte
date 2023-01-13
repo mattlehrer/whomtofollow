@@ -166,32 +166,52 @@
 			follows = [...follows, ...newFollows];
 			page = getNextPage(response.headers.get('Link') ?? undefined);
 		}
-		for (const f of follows) {
-			if ($accountData.has(f.acct)) {
-				$accountData.get(f.acct)?.followed_by.add(acct);
+
+		const followsPromises = follows.map((f) =>
+			trackProgress(saveAcctInfo({ f, direct, acct, domain })),
+		);
+		await fulfilledValues(followsPromises);
+
+		return follows;
+	}
+
+	async function saveAcctInfo({
+		f,
+		direct,
+		acct,
+		domain,
+	}: {
+		f: Account;
+		direct: boolean;
+		acct: Account['acct'];
+		domain: string;
+	}) {
+		if ($accountData.has(f.acct)) {
+			$accountData.get(f.acct)?.followed_by.add(acct);
+		} else {
+			if (!direct) {
+				$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
 			} else {
-				if (!direct) {
+				// different servers use different account IDs
+				// if the account is a direct follow, we are going to need to do a follower lookup
+				// on that acct's server. if the acct is on the same server, we're done.
+
+				const fDomain = f.url.match(/https?:\/\/([^/]+)/)?.[1];
+				if (domain === fDomain) {
+					console.log(`${f.acct} is on the same server as ${acct}`);
 					$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
 				} else {
-					// different servers use different account IDs
-					// if the account is a direct follow, we are going to need to do a follower lookup
-					// on that acct's server. if the acct is on the same server, we're done.
-
-					const fDomain = f.url.match(/https?:\/\/([^/]+)/)?.[1];
-					if (domain === fDomain) {
-						console.log(`${f.acct} is on the same server as ${acct}`);
-						$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
-					} else {
-						console.log(`${f.acct} is not on the same server as ${acct}`);
+					console.log(`${f.acct} is not on the same server as ${acct}`);
+					try {
 						const fInfo = await getAccountInfo(f.acct);
-						// const fInfo = await trackProgress(getAccountInfo(f.acct));
 						$accountData.set(f.acct, { ...fInfo, followed_by: new Set([acct]) });
+					} catch (error) {
+						console.log('Problem getting account info for', f.acct, error);
 					}
 				}
 			}
-			count++;
 		}
-		return follows;
+		count++;
 	}
 
 	async function search() {
