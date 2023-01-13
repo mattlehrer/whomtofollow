@@ -23,7 +23,7 @@
 	let accountsYouMightFollow: Account[] = [];
 
 	// not sure of a better way to make the accountData map reactive
-	$: if (count)
+	$: if (count || !isLoading) {
 		accountsYouMightFollow = [...$accountData.entries()]
 			.filter(([acct]) => !dontSuggest.has(acct))
 			.map((a) => a[1])
@@ -32,6 +32,23 @@
 				(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
 			)
 			.slice(0, 500);
+
+		const somethingFishy = accountsYouMightFollow.filter(
+			(a) => a.followed_by.size / a.followers_count > 1,
+		);
+		if (somethingFishy.length) {
+			accountsYouMightFollow = accountsYouMightFollow.filter(
+				(a) => a.followed_by.size / a.followers_count <= 1,
+			);
+		}
+		// if (!isLoading) {
+		// 	console.log('accountsYouMightFollow[0]', JSON.stringify(accountsYouMightFollow[0], null, 2));
+		// 	console.log(
+		// 		'followed_by',
+		// 		JSON.stringify([...accountsYouMightFollow[0].followed_by], null, 2),
+		// 	);
+		// }
+	}
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 
@@ -61,7 +78,6 @@
 		const domain = match[2];
 
 		try {
-			console.log('Checking webfinger for', acct);
 			const webfingerResp = await fetch(
 				`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
 			);
@@ -90,12 +106,12 @@
 		throw new Error(`Error getting domain for ${acct}`);
 	}
 
-	async function getAccountInfo(acct: Account['acct']): Promise<Account> {
-		if ($accountData.has(acct)) {
+	async function getAccountInfo(acct: Account['acct'], force = false): Promise<Account> {
+		if (!force && $accountData.has(acct)) {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			return $accountData.get(acct)!;
 		}
-		let accountInfo: Account & { error?: string };
+		let accountInfo: Account & { error?: string; error_description?: string };
 		try {
 			const domain = await getDomain(acct);
 			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
@@ -109,17 +125,28 @@
 			}
 
 			accountInfo = await accountInfoRes.json();
+			// (Mastodon responds with "Record not found")
 			if (accountInfo.error === "Can't find user") {
-				// Pleroma response (Mastodon responds with "Record not found")
+				// Pleroma error = "Can't find user"
 				const nickname = acct.split('@')[0];
-				const pleromaInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`);
-				accountInfo = await pleromaInfoRes.json();
+				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`);
+				accountInfo = await nonMastodonInfoRes.json();
+			} else if (
+				accountInfo.error_description ===
+				// Friendica error_description = "The API endpoint is currently not implemented but might be in the future.
+				'The API endpoint is currently not implemented but might be in the future.'
+			) {
+				console.log('Friendica');
+				const nickname = acct.split('@')[0];
+				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`);
+				accountInfo = await nonMastodonInfoRes.json();
 			}
 
 			while (accountInfo.moved) {
 				accountInfo = await getAccountInfo(accountInfo.moved.acct);
 			}
 			$accountData.set(acct, { ...accountInfo, followed_by: new Set() });
+			count++;
 		} catch (e) {
 			console.log({ e });
 			throw new Error(`Error getting ${acct} info`);
@@ -159,7 +186,7 @@
 			}
 			const json = (await response.json()) as Account[];
 			const newFollows = json.map((follow: Account) =>
-				follow.acct && /@/.test(follow.acct)
+				follow.acct && /.+@.+/.test(follow.acct)
 					? follow
 					: { ...follow, acct: `${follow.acct}@${domain}` },
 			);
@@ -168,7 +195,7 @@
 		}
 
 		const followsPromises = follows.map((f) =>
-			trackProgress(saveAcctInfo({ f, direct, acct, domain })),
+			trackProgress(saveAcctInfo({ accountToSave: f, direct, followedBy: acct })),
 		);
 		await fulfilledValues(followsPromises);
 
@@ -176,42 +203,57 @@
 	}
 
 	async function saveAcctInfo({
-		f,
+		accountToSave,
 		direct,
-		acct,
-		domain,
+		followedBy,
 	}: {
-		f: Account;
+		accountToSave: Account;
 		direct: boolean;
-		acct: Account['acct'];
-		domain: string;
+		followedBy: Account['acct'];
 	}) {
-		if ($accountData.has(f.acct)) {
-			$accountData.get(f.acct)?.followed_by.add(acct);
+		if ($accountData.has(accountToSave.acct)) {
+			const account = $accountData.get(accountToSave.acct);
+			if (!account) {
+				throw new Error('account should exist');
+			}
+			$accountData.set(accountToSave.acct, {
+				...account,
+				acct: accountToSave.acct,
+				followers_count: Math.max(account.followers_count, accountToSave.followers_count),
+				followed_by: account.followed_by.add(followedBy),
+			});
+			count++;
 		} else {
 			if (!direct) {
-				$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
+				$accountData.set(accountToSave.acct, {
+					...accountToSave,
+					followed_by: new Set([followedBy]),
+				});
+				count++;
 			} else {
 				// different servers use different account IDs
 				// if the account is a direct follow, we are going to need to do a follower lookup
 				// on that acct's server. if the acct is on the same server, we're done.
 
-				const fDomain = f.url.match(/https?:\/\/([^/]+)/)?.[1];
+				const fDomain = accountToSave.url.match(/https?:\/\/([^/]+)/)?.[1];
+				const domain = await getDomain(followedBy);
 				if (domain === fDomain) {
-					console.log(`${f.acct} is on the same server as ${acct}`);
-					$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
+					$accountData.set(accountToSave.acct, {
+						...accountToSave,
+						followed_by: new Set([followedBy]),
+					});
+					count++;
 				} else {
-					console.log(`${f.acct} is not on the same server as ${acct}`);
 					try {
-						const fInfo = await getAccountInfo(f.acct);
-						$accountData.set(f.acct, { ...fInfo, followed_by: new Set([acct]) });
+						const fInfo = await getAccountInfo(accountToSave.acct);
+						$accountData.set(accountToSave.acct, { ...fInfo, followed_by: new Set([followedBy]) });
+						count++;
 					} catch (error) {
-						console.log('Problem getting account info for', f.acct, error);
+						console.log('Problem getting account info for', accountToSave.acct, error);
 					}
 				}
 			}
 		}
-		count++;
 	}
 
 	async function search() {
