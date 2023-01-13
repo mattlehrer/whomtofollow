@@ -7,12 +7,9 @@
 
 	const MAX_FOLLOWER_AVATARS = 10;
 
-	const followers = [...account.followed_by]
-		.map((f) => $accountData.get(f))
-		.filter(isAccount)
-		.sort(() => Math.random() - 0.5);
+	$: followers = [...account.followed_by].map((f) => $accountData.get(f)).filter(isAccount);
 
-	const followersToShow =
+	$: followersToShow =
 		followers.length > MAX_FOLLOWER_AVATARS ? followers.slice(0, MAX_FOLLOWER_AVATARS) : followers;
 
 	function isAccount(f: Account | undefined): f is Account {
@@ -44,7 +41,7 @@
 	</div>
 </button>
 {#if showFollowers}
-	<div transition:slide class="mt-2 flex max-w-full flex-wrap text-sm">
+	<div transition:slide class="mt-2  max-w-full text-sm">
 		<p class="my-2 font-medium">
 			Followed by {followers.length.toLocaleString()} accounts you follow:
 		</p>
