@@ -6,6 +6,7 @@
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
+	import Footer from '$lib/Footer.svelte';
 
 	export let data: PageData;
 
@@ -51,7 +52,6 @@
 		let accountInfo: Account;
 		try {
 			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
-
 			if (!accountInfoRes.ok) {
 				if (accountInfoRes.status === 404 && accountInfoRes.type === 'cors') {
 					accountInfoRes = await fetch(`/api/acct/${acct}`);
@@ -91,6 +91,8 @@
 
 			if (!response.ok) {
 				// TODO: if cors error, try via server?
+				// if 404, check webfinger, then request acct info to get correct account id
+				// https://docs.joinmastodon.org/spec/webfinger/
 				const status = String(response.status);
 				if (errors[status]) {
 					errors[status] = [...errors[status], acct];
@@ -193,34 +195,37 @@
 
 <main>
 	{#if !accountsYouMightFollow.length}
-		<div class="mt-4 p-4 sm:p-8 md:p-16">
-			<form class="max-w-2xl sm:px-4" on:submit={search}>
-				<label
-					for="account"
-					class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
-					>Your Fediverse Account:</label
-				>
-				<div class="mt-3">
-					<input
-						type="text"
-						name="account"
-						id="account"
-						required
-						pattern={AccountRegex.source}
-						title="Please enter a valid account including the username, the @ symbol, and the host domain."
-						bind:value={account}
-						class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
-						placeholder="gargron@mastodon.social"
-					/>
-				</div>
-				<button
-					on:click|preventDefault={search}
-					disabled={isLoading}
-					type="button"
-					class="mt-6 inline-flex  items-center rounded-full border border-transparent bg-brand-600 px-4 py-2 text-lg font-medium text-brand-100 shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25"
-					>Find people you may know</button
-				>
-			</form>
+		<div class="flex flex-col justify-between h-full">
+			<div class="p-4 sm:p-8 md:p-16">
+				<form class="max-w-2xl sm:px-4" on:submit={search}>
+					<label
+						for="account"
+						class="ml-px block pl-4 text-3xl font-medium text-brand-700 sm:text-4xl"
+						>Your Fediverse Account:</label
+					>
+					<div class="mt-3">
+						<input
+							type="text"
+							name="account"
+							id="account"
+							required
+							pattern={AccountRegex.source}
+							title="Please enter a valid account including the username, the @ symbol, and the host domain."
+							bind:value={account}
+							class="block w-full rounded-full border-slate-700 px-4 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+							placeholder="gargron@mastodon.social"
+						/>
+					</div>
+					<button
+						on:click|preventDefault={search}
+						disabled={isLoading}
+						type="button"
+						class="mt-6 inline-flex  items-center rounded-full border border-transparent bg-brand-600 px-4 py-2 text-lg font-medium text-brand-100 shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25"
+						>Find people you may know</button
+					>
+				</form>
+			</div>
+			<Footer />
 		</div>
 	{/if}
 	{#if accountsYouMightFollow.length}
@@ -257,10 +262,13 @@
 
 			<FollowSuggestion account={data} {host} />
 
-			<div class="max-w-4xl p-4 sm:p-8 md:p-16" slot="footer">
-				{#if Object.keys(errors).length}
-					<Errors {errors} />
-				{/if}
+			<div slot="footer">
+				<div class="max-w-4xl p-4 sm:p-8 md:px-16">
+					{#if Object.keys(errors).length}
+						<Errors {errors} />
+					{/if}
+				</div>
+				<Footer />
 			</div>
 		</VirtualScroll>
 	{/if}
