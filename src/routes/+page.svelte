@@ -15,6 +15,7 @@
 
 	let account: string = data.account;
 	let host: string;
+	let hosts = new Map<string, string>();
 	let isLoading = false;
 	let errors: Record<string, string[]> = {};
 	let dontSuggest = new Set<string>();
@@ -34,13 +35,59 @@
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 
-	function getDomain(acct: string) {
+	async function getDomain(acct: string) {
+		const server = acct.split('@')[1];
+		if (hosts.has(server)) {
+			// assume that all other users with the same domain are on the same server
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			return hosts.get(server)!;
+		}
+
+		if ($accountData.has(acct)) {
+			const account = $accountData.get(acct);
+			if (account?.url) {
+				const match = account.url.match(/^https?:\/\/([\w-]+(\.[\w-]+)+)/);
+				if (match?.length === 3) {
+					return match[1];
+				}
+			}
+		}
+
+		// check webfinger
 		const match = acct.match(/^@?(.+)@(.+)$/);
 		if (match?.length !== 3) {
 			throw new Error(`Incorrect handle: ${acct}`);
 		}
 		const domain = match[2];
-		return domain;
+
+		try {
+			console.log('Checking webfinger for', acct);
+			const webfingerResp = await fetch(
+				`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
+			);
+			if (!webfingerResp.ok) {
+				throw new Error(`Error getting webfinger for ${acct}`);
+			}
+			const webfinger = await webfingerResp.json();
+			const links = webfinger.links;
+			type AcctLink = {
+				rel: string;
+				type: string;
+				href: string;
+			};
+			const acctLink: AcctLink = links.find(
+				(l: AcctLink) => l.rel === 'self' && l.type === 'application/activity+json',
+			);
+			if (!acctLink) {
+				throw new Error(`No activity pub link for ${acct}`);
+			}
+			const acctUrl = new URL(acctLink.href);
+			hosts.set(server, acctUrl.host);
+			return acctUrl.host;
+		} catch (error) {
+			console.error('getDomain', error, acct);
+		}
+		throw new Error(`Error getting domain for ${acct}`);
 	}
 
 	async function getAccountInfo(acct: Account['acct']): Promise<Account> {
@@ -48,12 +95,12 @@
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			return $accountData.get(acct)!;
 		}
-		const domain = getDomain(acct);
-		let accountInfo: Account;
+		let accountInfo: Account & { error?: string };
 		try {
+			const domain = await getDomain(acct);
 			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
 			if (!accountInfoRes.ok) {
-				if (accountInfoRes.status === 404 && accountInfoRes.type === 'cors') {
+				if (accountInfoRes.type === 'cors') {
 					accountInfoRes = await fetch(`/api/acct/${acct}`);
 				}
 			}
@@ -62,6 +109,12 @@
 			}
 
 			accountInfo = await accountInfoRes.json();
+			if (accountInfo.error === "Can't find user") {
+				// Pleroma response (Mastodon responds with "Record not found")
+				const nickname = acct.split('@')[0];
+				const pleromaInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`);
+				accountInfo = await pleromaInfoRes.json();
+			}
 
 			while (accountInfo.moved) {
 				accountInfo = await getAccountInfo(accountInfo.moved.acct);
@@ -74,12 +127,15 @@
 		return accountInfo;
 	}
 
-	async function getFollows(acct: Account['acct']): Promise<Account[]> {
-		const domain = getDomain(acct);
+	async function getFollows(acct: Account['acct'], direct = true): Promise<Account[]> {
+		if (!direct && acct === account) {
+			return [];
+		}
 		const accountInfo = await getAccountInfo(acct);
 		if (!accountInfo.id) {
 			return [];
 		}
+		const domain = await getDomain(acct);
 
 		let page:
 			| string
@@ -114,14 +170,24 @@
 			if ($accountData.has(f.acct)) {
 				$accountData.get(f.acct)?.followed_by.add(acct);
 			} else {
-				if (!f.id.match(/^[0-9]+$/)) {
-					// not a mastodon ID, likely pleroma, try finding the mastodon ID in the avatar S3 URL
-					const match = f.avatar.match(/accounts\/avatars\/([0-9/]+)\/original/);
-					if (match) {
-						f.id = match[1].replaceAll('/', '');
+				if (!direct) {
+					$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
+				} else {
+					// different servers use different account IDs
+					// if the account is a direct follow, we are going to need to do a follower lookup
+					// on that acct's server. if the acct is on the same server, we're done.
+
+					const fDomain = f.url.match(/https?:\/\/([^/]+)/)?.[1];
+					if (domain === fDomain) {
+						console.log(`${f.acct} is on the same server as ${acct}`);
+						$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
+					} else {
+						console.log(`${f.acct} is not on the same server as ${acct}`);
+						const fInfo = await getAccountInfo(f.acct);
+						// const fInfo = await trackProgress(getAccountInfo(f.acct));
+						$accountData.set(f.acct, { ...fInfo, followed_by: new Set([acct]) });
 					}
 				}
-				$accountData.set(f.acct, { ...f, followed_by: new Set([acct]) });
 			}
 			count++;
 		}
@@ -139,17 +205,18 @@
 		// TODO: reuse cache of account data
 		$accountData = new Map<string, Account>();
 
-		// save host for follow links
-		host = getDomain(account);
-
 		try {
 			const following = await getFollows(account);
+			console.log(account, 'follows', following.length, 'accounts');
+
+			// save host for follow links
+			host = await getDomain(account);
 			dontSuggest = new Set<string>([...following.map((f) => f.acct), account.replace(/^@/, '')]);
 
 			// get 2nd level follows
 			const followingPromises = following
 				.sort(() => Math.random() - 0.5)
-				.map((f) => trackProgress(getFollows(f.acct)));
+				.map((f) => trackProgress(getFollows(f.acct, false)));
 			await fulfilledValues(followingPromises);
 		} catch (error) {
 			console.log({ error });
@@ -166,11 +233,15 @@
 	}
 
 	async function fulfilledValues<T>(promises: Promise<T>[]) {
-		return Promise.allSettled(promises).then((results) => {
-			return results
-				.filter((result) => result.status === 'fulfilled')
-				.map((result) => (result as PromiseFulfilledResult<T>).value);
-		});
+		return Promise.allSettled(promises)
+			.then((results) => {
+				return results
+					.filter((result) => result.status === 'fulfilled')
+					.map((result) => (result as PromiseFulfilledResult<T>).value);
+			})
+			.catch((error) => {
+				console.log({ error });
+			});
 	}
 
 	let pendingFetches = 0;
