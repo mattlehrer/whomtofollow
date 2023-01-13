@@ -52,7 +52,7 @@
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 
-	async function getDomain(acct: string) {
+	async function getDomain(acct: string): Promise<string> {
 		const server = acct.split('@')[1];
 		if (hosts.has(server)) {
 			// assume that all other users with the same domain are on the same server
@@ -81,9 +81,6 @@
 			const webfingerResp = await fetch(
 				`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
 			);
-			if (!webfingerResp.ok) {
-				throw new Error(`Error getting webfinger for ${acct}`);
-			}
 			const webfinger = await webfingerResp.json();
 			const links = webfinger.links;
 			type AcctLink = {
@@ -101,7 +98,16 @@
 			hosts.set(server, acctUrl.host);
 			return acctUrl.host;
 		} catch (error) {
-			console.error('getDomain', error, acct);
+			console.log('getDomain', error, acct);
+		}
+		try {
+			const webfingerResp = await fetch(`/api/webfinger/${domain}/${acct}`);
+			const acctLinkHref = await webfingerResp.text();
+			const acctUrl = new URL(acctLinkHref);
+			hosts.set(server, acctUrl.host);
+			return acctUrl.host;
+		} catch (error) {
+			console.log('getDomain webfinger', error, acct);
 		}
 		throw new Error(`Error getting domain for ${acct}`);
 	}
@@ -170,9 +176,21 @@
 
 		let follows: Account[] = [];
 		while (page && follows.length < MAX_FOLLOWERS_TO_FETCH) {
-			const response = await fetch(page);
+			// const response = await fetch(page);
+			let response;
+			try {
+				response = await fetch(page);
+			} catch (e: unknown) {
+				// console.log({ e });
+				if (e instanceof Error) {
+					console.log({ msg: e.message });
+				} else {
+					console.log({ msg: 'unknown error' }, e);
+				}
+				return follows;
+			}
 
-			if (!response.ok) {
+			if (!response?.ok) {
 				// TODO: if cors error, try via server?
 				// if 404, check webfinger, then request acct info to get correct account id
 				// https://docs.joinmastodon.org/spec/webfinger/
