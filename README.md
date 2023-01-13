@@ -1,19 +1,13 @@
 # Fediverse PYMK
 
-- [x] TODO: handle form submission
-
-- [x] TODO: loading indicator
-
-- [x] TODO: clean up error display
-
-- [ ] TODO: add hero
-
-- [ ] TODO: add footer
-
-- [ ] TODO: add favicon
-
-- [ ] TODO: add og image/description
-
-- [ ] TODO: add FAQ
-
-- [ ] TODO: readme
+## TODOs
+- [x] handle form submission
+- [x] loading indicator
+- [x] clean up error display
+- [ ] add hero
+- [ ] privacy policy
+- [ ] add footer
+- [ ] add favicon
+- [ ] add og image/description
+- [ ] add FAQ
+- [ ] readme
