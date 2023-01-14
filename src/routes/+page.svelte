@@ -5,7 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import type { Account } from '../lib/Account';
 	import Errors from './Errors.svelte';
-	import { accountData } from '../lib/data';
+	import { accountData, hosts } from '../lib/data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';
@@ -19,7 +19,6 @@
 
 	let account: string = data.account;
 	let host: string;
-	let hosts = new Map<string, string>();
 	let isLoading = false;
 	let errors: Record<string, string[]> = {};
 	let dontSuggest = new Set<string>();
@@ -51,10 +50,10 @@
 
 	async function getDomain(acct: string): Promise<string> {
 		const server = acct.split('@')[1];
-		if (hosts.has(server)) {
+		if ($hosts.has(server)) {
 			// assume that all other users with the same domain are on the same server
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			return hosts.get(server)!;
+			return $hosts.get(server)!;
 		}
 
 		if ($accountData.has(acct)) {
@@ -95,7 +94,7 @@
 				throw new Error(`No activity pub link for ${acct}`);
 			}
 			const acctUrl = new URL(acctLink.href);
-			hosts.set(server, acctUrl.host);
+			$hosts.set(server, acctUrl.host);
 			return acctUrl.host;
 		} catch (error) {
 			// console.log('getDomain', error, acct);
@@ -106,7 +105,7 @@
 			});
 			const acctLinkHref = await webfingerResp.text();
 			const acctUrl = new URL(acctLinkHref);
-			hosts.set(server, acctUrl.host);
+			$hosts.set(server, acctUrl.host);
 			return acctUrl.host;
 		} catch (error) {
 			console.debug('getDomain webfinger', error, acct);
