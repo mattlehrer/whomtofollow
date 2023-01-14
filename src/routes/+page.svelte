@@ -98,7 +98,7 @@
 			hosts.set(server, acctUrl.host);
 			return acctUrl.host;
 		} catch (error) {
-			console.log('getDomain', error, acct);
+			// console.log('getDomain', error, acct);
 		}
 		try {
 			const webfingerResp = await fetch(`/api/webfinger/${domain}/${acct}`);
@@ -107,7 +107,7 @@
 			hosts.set(server, acctUrl.host);
 			return acctUrl.host;
 		} catch (error) {
-			console.log('getDomain webfinger', error, acct);
+			console.debug('getDomain webfinger', error, acct);
 		}
 		throw new Error(`Error getting domain for ${acct}`);
 	}
@@ -154,7 +154,7 @@
 			$accountData.set(acct, { ...accountInfo, followed_by: new Set() });
 			count++;
 		} catch (e) {
-			console.log({ e });
+			// console.log({ e });
 			throw new Error(`Error getting ${acct} info`);
 		}
 		return accountInfo;
@@ -164,7 +164,19 @@
 		if (!direct && acct === account) {
 			return [];
 		}
-		const accountInfo = await getAccountInfo(acct);
+		let accountInfo;
+		try {
+			accountInfo = await getAccountInfo(acct);
+		} catch (error: any) {
+			if (error?.status) {
+				if (errors[error.status]) {
+					errors[error.status] = [...errors[error.status], acct];
+				} else {
+					errors[error.status] = [acct];
+				}
+			}
+			return [];
+		}
 		if (!accountInfo.id) {
 			return [];
 		}
@@ -267,7 +279,7 @@
 						$accountData.set(accountToSave.acct, { ...fInfo, followed_by: new Set([followedBy]) });
 						count++;
 					} catch (error) {
-						console.log('Problem getting account info for', accountToSave.acct, error);
+						console.debug('Problem getting account info for', accountToSave.acct);
 					}
 				}
 			}
