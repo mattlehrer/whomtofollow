@@ -5,13 +5,16 @@
 	import { fade } from 'svelte/transition';
 	import type { Account } from '../lib/Account';
 	import Errors from './Errors.svelte';
-	import { accountData } from '../lib/data';
+	import { accountData, updateAccountData } from '../lib/data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';
 	import { Timeout } from '$lib/utils/timeout';
 	import { fulfilledValues } from '$lib/utils/promises';
 	import { getDomain } from '$lib/getDomain';
+	import { onMount } from 'svelte';
+	import { derived } from 'svelte/store';
+	import { getAccountInfo } from '$lib/getAccountInfo';
 
 	export let data: PageData;
 
@@ -22,88 +25,30 @@
 	let host: string;
 	let isLoading = false;
 	let errors: Record<string, string[]> = {};
-	let dontSuggest = new Set<string>();
-	let count = 0;
-	let accountsYouMightFollow: Account[] = [];
+	let dontSuggest: Set<string>;
+	// let count = 0;
+
+	onMount(() => {
+		dontSuggest = new Set();
+	});
 
 	// not sure of a better way to make the accountData map reactive
-	$: if (count || !isLoading) {
-		accountsYouMightFollow = [...$accountData.entries()]
-			.filter(([acct]) => !dontSuggest.has(acct))
+	const accountsYouMightFollow = derived([accountData, updateAccountData], ([$accountData]) =>
+		[...$accountData.entries()]
+			.filter(([acct]) => !dontSuggest?.has(acct))
 			.map((a) => a[1])
-			.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST)
+			.filter(
+				(a) =>
+					a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST &&
+					a.followed_by.size / a.followers_count <= 1,
+			)
 			.sort(
 				(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
 			)
-			.slice(0, 500);
-
-		const somethingFishy = accountsYouMightFollow.filter(
-			(a) => a.followed_by.size / a.followers_count > 1,
-		);
-		if (somethingFishy.length) {
-			accountsYouMightFollow = accountsYouMightFollow.filter(
-				(a) => a.followed_by.size / a.followers_count <= 1,
-			);
-		}
-	}
+			.slice(0, 500),
+	);
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
-
-	async function getAccountInfo(acct: Account['acct'], force = false): Promise<Account> {
-		if (!force && $accountData.has(acct)) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			return $accountData.get(acct)!;
-		}
-		let accountInfo: Account & { error?: string; error_description?: string };
-		try {
-			const domain = await getDomain(acct);
-			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`, {
-				signal: Timeout(2000).signal,
-			});
-			if (!accountInfoRes.ok) {
-				if (accountInfoRes.type === 'cors') {
-					accountInfoRes = await fetch(`/api/acct/${acct}`, {
-						signal: Timeout(2000).signal,
-					});
-				}
-			}
-			if (!accountInfoRes.ok) {
-				throw new Error(accountInfoRes.statusText);
-			}
-
-			accountInfo = await accountInfoRes.json();
-			// (Mastodon responds with "Record not found")
-			if (accountInfo.error === "Can't find user") {
-				// Pleroma error = "Can't find user"
-				const nickname = acct.split('@')[0];
-				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-					signal: Timeout(2000).signal,
-				});
-				accountInfo = await nonMastodonInfoRes.json();
-			} else if (
-				accountInfo.error_description ===
-				// Friendica error_description = "The API endpoint is currently not implemented but might be in the future.
-				'The API endpoint is currently not implemented but might be in the future.'
-			) {
-				console.log('Friendica');
-				const nickname = acct.split('@')[0];
-				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-					signal: Timeout(2000).signal,
-				});
-				accountInfo = await nonMastodonInfoRes.json();
-			}
-
-			while (accountInfo.moved) {
-				accountInfo = await getAccountInfo(accountInfo.moved.acct);
-			}
-			$accountData.set(acct, { ...accountInfo, followed_by: new Set() });
-			count++;
-		} catch (e) {
-			// console.log({ e });
-			throw new Error(`Error getting ${acct} info`);
-		}
-		return accountInfo;
-	}
 
 	async function getFollows(acct: Account['acct'], direct = true): Promise<Account[]> {
 		function getNextPage(linkHeader: string | undefined): string | undefined {
@@ -207,14 +152,14 @@
 				followers_count: Math.max(account.followers_count, accountToSave.followers_count),
 				followed_by: account.followed_by.add(followedBy),
 			});
-			count++;
+			$updateAccountData = !$updateAccountData;
 		} else {
 			if (!direct) {
 				$accountData.set(accountToSave.acct, {
 					...accountToSave,
 					followed_by: new Set([followedBy]),
 				});
-				count++;
+				$updateAccountData = !$updateAccountData;
 			} else {
 				// different servers use different account IDs
 				// if the account is a direct follow, we are going to need to do a follower lookup
@@ -227,12 +172,12 @@
 						...accountToSave,
 						followed_by: new Set([followedBy]),
 					});
-					count++;
+					$updateAccountData = !$updateAccountData;
 				} else {
 					try {
 						const fInfo = await getAccountInfo(accountToSave.acct);
 						$accountData.set(accountToSave.acct, { ...fInfo, followed_by: new Set([followedBy]) });
-						count++;
+						$updateAccountData = !$updateAccountData;
 					} catch (error) {
 						console.debug('Problem getting account info for', accountToSave.acct);
 					}
@@ -246,9 +191,8 @@
 			return;
 		}
 		isLoading = true;
-		dontSuggest = new Set<string>();
-		accountsYouMightFollow = [];
-		count = 0;
+		// accountsYouMightFollow = [];
+		dontSuggest.clear();
 		// TODO: reuse cache of account data
 		$accountData = new Map<string, Account>();
 
@@ -297,16 +241,15 @@
 </svelte:head>
 
 <main class="pt-4">
-	{#if !accountsYouMightFollow.length}
-		<div class="flex flex-col justify-between h-full">
+	{#if !$accountsYouMightFollow.length}
+		<div class="flex h-full flex-col justify-between">
 			<div class="p-4 sm:p-8 md:p-16">
 				<SearchForm bind:account bind:isLoading on:submit={search} />
 			</div>
 			<Footer />
 		</div>
-	{/if}
-	{#if accountsYouMightFollow.length}
-		<VirtualScroll data={accountsYouMightFollow} key="id" let:data>
+	{:else}
+		<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
 			<div class="p-4 pb-8 sm:p-8 md:p-16" slot="header">
 				<SearchForm bind:account bind:isLoading on:submit={search} />
 			</div>
