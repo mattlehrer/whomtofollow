@@ -1,12 +1,29 @@
 <script lang="ts">
+	import { debounce } from 'debounce';
 	import AccountDetails from './AccountDetails.svelte';
 	import type { Account } from './Account';
 
 	export let account: Account;
 	export let host: string;
+
+	const domain = new URL(account.url).hostname;
+
+	async function updateInfo() {
+		try {
+			const res = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${account.acct}`);
+			const updatedAccount = await res.json();
+			account.followers_count = updatedAccount.followers_count;
+			account.id = updatedAccount.id;
+		} catch (error) {
+			console.log(error);
+		}
+	}
 </script>
 
-<article class="block max-w-3xl overflow-hidden hover:bg-brand-100 sm:mx-8 md:mx-16">
+<article
+	class="block max-w-3xl overflow-hidden hover:bg-brand-100 sm:mx-8 md:mx-16"
+	on:mouseenter={debounce(updateInfo, 100000, true)}
+>
 	<div class="flex flex-col items-start p-4 md:mx-0 md:flex-row md:p-6">
 		<div class="flex w-full items-center justify-between md:items-start">
 			<div class="flex-shrink-0">
