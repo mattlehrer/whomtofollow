@@ -59,18 +59,19 @@
 		}
 		isLoading = true;
 		$phase1Progress = 20;
-		// accountsYouMightFollow = [];
-		dontSuggest.clear();
+		// dontSuggest.clear();
 		// TODO: reuse cache of account data
 		$accountData = new Map<string, Account>();
 
 		try {
+			dontSuggest = new Set<string>([account.replace(/^@/, '')]);
 			const following = await getFollows(account, account, true, 2000);
 			console.log(account, 'follows', following.length, 'accounts');
-
+			for (const f of following) {
+				dontSuggest.add(f.acct);
+			}
 			// save host for follow links
 			host = await getDomain(account);
-			dontSuggest = new Set<string>([...following.map((f) => f.acct), account.replace(/^@/, '')]);
 
 			// get 2nd level follows
 			const followingPromises = following
