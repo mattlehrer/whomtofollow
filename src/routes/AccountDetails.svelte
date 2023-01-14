@@ -1,7 +1,7 @@
 <script lang="ts">
 	import sanitize from 'sanitize-html';
 	import FollowerAvatars from './FollowerAvatars.svelte';
-	import type { Account } from './Account';
+	import type { Account } from '../lib/Account';
 
 	export let account: Account;
 </script>

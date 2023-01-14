@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { debounce } from 'debounce';
 	import AccountDetails from './AccountDetails.svelte';
-	import type { Account } from './Account';
+	import type { Account } from '../lib/Account';
 
 	export let account: Account;
 	export let host: string;

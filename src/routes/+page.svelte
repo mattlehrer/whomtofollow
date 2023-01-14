@@ -3,13 +3,14 @@
 
 	import VirtualScroll from 'svelte-virtual-scroll-list';
 	import { fade } from 'svelte/transition';
-	import type { Account } from './Account';
+	import type { Account } from '../lib/Account';
 	import Errors from './Errors.svelte';
 	import { accountData } from './data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';
-	import { Timeout } from '$lib/timeout';
+	import { Timeout } from '$lib/utils/timeout';
+	import { fulfilledValues } from '$lib/utils/promises';
 
 	export let data: PageData;
 
@@ -170,6 +171,14 @@
 	}
 
 	async function getFollows(acct: Account['acct'], direct = true): Promise<Account[]> {
+		function getNextPage(linkHeader: string | undefined): string | undefined {
+			if (!linkHeader) return;
+
+			// https://docs.joinmastodon.org/api/guidelines/#pagination
+			const match = linkHeader.match(/<(.+)>; rel="next"/);
+			return match?.[1];
+		}
+
 		if (!direct && acct === account) {
 			return [];
 		}
@@ -325,27 +334,6 @@
 			console.log({ error });
 		}
 		isLoading = false;
-	}
-
-	function getNextPage(linkHeader: string | undefined): string | undefined {
-		if (!linkHeader) return;
-
-		// https://docs.joinmastodon.org/api/guidelines/#pagination
-		const match = linkHeader.match(/<(.+)>; rel="next"/);
-		return match?.[1];
-	}
-
-	async function fulfilledValues<T>(promises: Promise<T>[]): Promise<T[]> {
-		return Promise.allSettled(promises)
-			.then((results) => {
-				return results
-					.filter((result) => result.status === 'fulfilled')
-					.map((result) => (result as PromiseFulfilledResult<T>).value);
-			})
-			.catch((error) => {
-				console.log({ error });
-				return [];
-			});
 	}
 
 	let pendingFetches = 0;
