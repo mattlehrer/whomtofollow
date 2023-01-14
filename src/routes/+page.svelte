@@ -9,6 +9,7 @@
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';
+	import { Timeout } from '$lib/timeout';
 
 	export let data: PageData;
 
@@ -75,6 +76,9 @@
 		try {
 			const webfingerResp = await fetch(
 				`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
+				{
+					signal: Timeout(2000).signal,
+				},
 			);
 			const webfinger = await webfingerResp.json();
 			const links = webfinger.links;
@@ -96,7 +100,9 @@
 			// console.log('getDomain', error, acct);
 		}
 		try {
-			const webfingerResp = await fetch(`/api/webfinger/${domain}/${acct}`);
+			const webfingerResp = await fetch(`/api/webfinger/${domain}/${acct}`, {
+				signal: Timeout(2000).signal,
+			});
 			const acctLinkHref = await webfingerResp.text();
 			const acctUrl = new URL(acctLinkHref);
 			hosts.set(server, acctUrl.host);
@@ -115,10 +121,14 @@
 		let accountInfo: Account & { error?: string; error_description?: string };
 		try {
 			const domain = await getDomain(acct);
-			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`);
+			let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`, {
+				signal: Timeout(2000).signal,
+			});
 			if (!accountInfoRes.ok) {
 				if (accountInfoRes.type === 'cors') {
-					accountInfoRes = await fetch(`/api/acct/${acct}`);
+					accountInfoRes = await fetch(`/api/acct/${acct}`, {
+						signal: Timeout(2000).signal,
+					});
 				}
 			}
 			if (!accountInfoRes.ok) {
@@ -130,7 +140,9 @@
 			if (accountInfo.error === "Can't find user") {
 				// Pleroma error = "Can't find user"
 				const nickname = acct.split('@')[0];
-				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`);
+				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
+					signal: Timeout(2000).signal,
+				});
 				accountInfo = await nonMastodonInfoRes.json();
 			} else if (
 				accountInfo.error_description ===
@@ -139,7 +151,9 @@
 			) {
 				console.log('Friendica');
 				const nickname = acct.split('@')[0];
-				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`);
+				const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
+					signal: Timeout(2000).signal,
+				});
 				accountInfo = await nonMastodonInfoRes.json();
 			}
 
@@ -186,13 +200,15 @@
 			// const response = await fetch(page);
 			let response;
 			try {
-				response = await fetch(page);
+				response = await fetch(page, {
+					signal: Timeout(2000 * (direct ? 1 : 3)).signal,
+				});
 			} catch (e: unknown) {
 				// console.log({ e });
 				if (e instanceof Error) {
-					console.log({ msg: e.message });
+					console.debug({ msg: e.message });
 				} else {
-					console.log({ msg: 'unknown error' }, e);
+					console.debug(e);
 				}
 				return follows;
 			}
@@ -319,7 +335,7 @@
 		return match?.[1];
 	}
 
-	async function fulfilledValues<T>(promises: Promise<T>[]) {
+	async function fulfilledValues<T>(promises: Promise<T>[]): Promise<T[]> {
 		return Promise.allSettled(promises)
 			.then((results) => {
 				return results
@@ -328,6 +344,7 @@
 			})
 			.catch((error) => {
 				console.log({ error });
+				return [];
 			});
 	}
 
@@ -341,7 +358,12 @@
 
 	let progressNode: HTMLElement;
 	$: if (progressNode && pendingFetches) {
-		const pctDone = (100 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
+		let pctDone: number;
+		if (dontSuggest.size) {
+			pctDone = (100 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
+		} else {
+			pctDone = 20 * ((1 - pendingFetches) / pendingFetches);
+		}
 		progressNode.style.setProperty('--progress', pctDone + '%');
 	}
 </script>
