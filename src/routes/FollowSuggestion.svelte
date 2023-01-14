@@ -15,7 +15,7 @@
 			account.followers_count = updatedAccount.followers_count;
 			account.id = updatedAccount.id;
 		} catch (error) {
-			console.log(error);
+			console.debug(error);
 		}
 	}
 </script>
