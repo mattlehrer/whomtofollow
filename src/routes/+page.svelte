@@ -5,7 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import type { Account } from '../lib/Account';
 	import Errors from './Errors.svelte';
-	import { accountData, updateAccountData } from '../lib/data';
+	import { accountData, errors, updateAccountData } from '../lib/data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';
@@ -25,9 +25,7 @@
 	let account: string = data.account;
 	let host: string;
 	let isLoading = false;
-	let errors: Record<string, string[]> = {};
 	let dontSuggest: Set<string>;
-	// let count = 0;
 
 	onMount(() => {
 		dontSuggest = new Set();
@@ -68,10 +66,10 @@
 			accountInfo = await getAccountInfo(acct);
 		} catch (error: any) {
 			if (error?.status) {
-				if (errors[error.status]) {
-					errors[error.status] = [...errors[error.status], acct];
+				if ($errors[error.status]) {
+					$errors[error.status] = [...$errors[error.status], acct];
 				} else {
-					errors[error.status] = [acct];
+					$errors[error.status] = [acct];
 				}
 			}
 			return [];
@@ -108,10 +106,10 @@
 				// if 404, check webfinger, then request acct info to get correct account id
 				// https://docs.joinmastodon.org/spec/webfinger/
 				const status = String(response.status);
-				if (errors[status]) {
-					errors[status] = [...errors[status], acct];
+				if ($errors[status]) {
+					$errors[status] = [...$errors[status], acct];
 				} else {
-					errors[status] = [acct];
+					$errors[status] = [acct];
 				}
 				return follows;
 			}
@@ -206,7 +204,7 @@
 			<div slot="footer">
 				<div class="max-w-4xl p-4 sm:p-8 md:px-16">
 					{#if Object.keys(errors).length}
-						<Errors {errors} />
+						<Errors errors={$errors} />
 					{/if}
 				</div>
 				<Footer />
