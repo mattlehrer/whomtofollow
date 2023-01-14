@@ -1,31 +1,35 @@
 <script lang="ts">
-	import SearchForm from './SearchForm.svelte';
-
-	import VirtualScroll from 'svelte-virtual-scroll-list';
+	import { onMount } from 'svelte';
+	import { cubicOut } from 'svelte/easing';
+	import { tweened } from 'svelte/motion';
+	import { derived } from 'svelte/store';
 	import { fade } from 'svelte/transition';
-	import type { Account } from '../lib/Account';
+	import VirtualScroll from 'svelte-virtual-scroll-list';
+
+	import SearchForm from './SearchForm.svelte';
+	import type { Account } from '$lib/Account';
 	import Errors from './Errors.svelte';
-	import { accountData, errors, updateAccountData } from '../lib/data';
+	import { accountData, errors, updateAccountData } from '$lib/data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';
-	import { Timeout } from '$lib/utils/timeout';
 	import { fulfilledValues } from '$lib/utils/promises';
 	import { getDomain } from '$lib/getDomain';
-	import { onMount } from 'svelte';
-	import { derived } from 'svelte/store';
-	import { getAccountInfo } from '$lib/getAccountInfo';
-	import { saveAcctInfo } from '$lib/saveAccountInfo';
+	import { getFollows } from '$lib/getFollows';
 
 	export let data: PageData;
 
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
-	const MAX_FOLLOWERS_TO_FETCH = 1000;
 
 	let account: string = data.account;
 	let host: string;
 	let isLoading = false;
 	let dontSuggest: Set<string>;
+
+	const phase1Progress = tweened(0, {
+		duration: 5000,
+		easing: cubicOut,
+	});
 
 	onMount(() => {
 		dontSuggest = new Set();
@@ -49,100 +53,19 @@
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 
-	async function getFollows(acct: Account['acct'], direct = true): Promise<Account[]> {
-		function getNextPage(linkHeader: string | undefined): string | undefined {
-			if (!linkHeader) return;
-
-			// https://docs.joinmastodon.org/api/guidelines/#pagination
-			const match = linkHeader.match(/<(.+)>; rel="next"/);
-			return match?.[1];
-		}
-
-		if (!direct && acct === account) {
-			return [];
-		}
-		let accountInfo;
-		try {
-			accountInfo = await getAccountInfo(acct);
-		} catch (error: any) {
-			if (error?.status) {
-				if ($errors[error.status]) {
-					$errors[error.status] = [...$errors[error.status], acct];
-				} else {
-					$errors[error.status] = [acct];
-				}
-			}
-			return [];
-		}
-		if (!accountInfo.id) {
-			return [];
-		}
-		const domain = await getDomain(acct);
-
-		let page:
-			| string
-			| undefined = `https://${domain}/api/v1/accounts/${accountInfo.id}/following?limit=80`;
-
-		let follows: Account[] = [];
-		while (page && follows.length < MAX_FOLLOWERS_TO_FETCH) {
-			// const response = await fetch(page);
-			let response;
-			try {
-				response = await fetch(page, {
-					signal: Timeout(2000 * (direct ? 1 : 3)).signal,
-				});
-			} catch (e: unknown) {
-				// console.log({ e });
-				if (e instanceof Error) {
-					console.debug({ msg: e.message });
-				} else {
-					console.debug(e);
-				}
-				return follows;
-			}
-
-			if (!response?.ok) {
-				// TODO: if cors error, try via server?
-				// if 404, check webfinger, then request acct info to get correct account id
-				// https://docs.joinmastodon.org/spec/webfinger/
-				const status = String(response.status);
-				if ($errors[status]) {
-					$errors[status] = [...$errors[status], acct];
-				} else {
-					$errors[status] = [acct];
-				}
-				return follows;
-			}
-			const json = (await response.json()) as Account[];
-			const newFollows = json.map((follow: Account) =>
-				follow.acct && /.+@.+/.test(follow.acct)
-					? follow
-					: { ...follow, acct: `${follow.acct}@${domain}` },
-			);
-			follows = [...follows, ...newFollows];
-			page = getNextPage(response.headers.get('Link') ?? undefined);
-		}
-
-		const followsPromises = follows.map((f) =>
-			trackProgress(saveAcctInfo({ accountToSave: f, direct, followedBy: acct })),
-		);
-		await fulfilledValues(followsPromises);
-
-		return follows;
-	}
-
 	async function search() {
 		if (!AccountRegex.test(account)) {
 			return;
 		}
 		isLoading = true;
+		$phase1Progress = 20;
 		// accountsYouMightFollow = [];
 		dontSuggest.clear();
 		// TODO: reuse cache of account data
 		$accountData = new Map<string, Account>();
 
 		try {
-			const following = await getFollows(account);
+			const following = await getFollows(account, account, true, 2000);
 			console.log(account, 'follows', following.length, 'accounts');
 
 			// save host for follow links
@@ -152,7 +75,7 @@
 			// get 2nd level follows
 			const followingPromises = following
 				.sort(() => Math.random() - 0.5)
-				.map((f) => trackProgress(getFollows(f.acct, false)));
+				.map((f) => trackProgress(getFollows(f.acct, account, false)));
 			await fulfilledValues(followingPromises);
 		} catch (error) {
 			console.log({ error });
@@ -169,15 +92,12 @@
 	}
 
 	let progressNode: HTMLElement;
-	$: if (progressNode && pendingFetches) {
-		let pctDone: number;
-		if (dontSuggest.size) {
-			pctDone = (100 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
-		} else {
-			pctDone = 20 * ((1 - pendingFetches) / pendingFetches);
-		}
-		progressNode.style.setProperty('--progress', pctDone + '%');
+	let pctDone = 0;
+	$: if (progressNode && pendingFetches && dontSuggest.size) {
+		pctDone = (80 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
 	}
+	$: if (pctDone || $phase1Progress)
+		progressNode?.style?.setProperty('--progress', pctDone + $phase1Progress + '%');
 </script>
 
 <svelte:head>
