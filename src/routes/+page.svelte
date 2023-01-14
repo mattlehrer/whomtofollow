@@ -5,7 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import type { Account } from '../lib/Account';
 	import Errors from './Errors.svelte';
-	import { accountData } from './data';
+	import { accountData } from '../lib/data';
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
 	import Footer from '$lib/Footer.svelte';

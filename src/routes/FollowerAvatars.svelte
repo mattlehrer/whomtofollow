@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import type { Account } from '../lib/Account';
-	import { accountData } from './data';
+	import { accountData } from '../lib/data';
 
 	export let account: Account;
 
