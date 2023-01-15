@@ -60,7 +60,6 @@
 		isLoading = true;
 		$phase1Progress = 20;
 		// dontSuggest.clear();
-		// TODO: reuse cache of account data
 		$accountData = new Map<string, Account>();
 
 		try {
