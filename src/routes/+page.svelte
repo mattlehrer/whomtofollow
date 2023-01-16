@@ -102,7 +102,7 @@
 
 <main class="pt-4">
 	{#if !$accountsYouMightFollow.length}
-		<div class="flex flex-col justify-between min-h-screen">
+		<div class="flex flex-col justify-between h-full">
 			<Hero bind:account bind:isLoading on:submit={search} />
 			<Footer />
 		</div>
@@ -130,6 +130,11 @@
 {/if}
 
 <style>
+	main {
+		height: 100dvh;
+		min-height: 700px;
+	}
+
 	.progress {
 		display: block;
 		width: 100%;

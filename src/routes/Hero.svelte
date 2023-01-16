@@ -7,9 +7,9 @@
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 </script>
 
-<div class="relative overflow-hidden">
+<div class="relative ">
 	<div class="relative py-4">
-		<section class="p-4 pb-8 sm:p-8 md:p-16 md:pt-24 max-w-7xl px-8">
+		<section class="p-4 pb-8 sm:p-8 md:p-16 lg:pt-24 max-w-[100rem] px-8">
 			<div class="lg:flex lg:gap-8">
 				<div class="lg:w-1/2 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:text-left">
 					<h1 class="block font-goudy text-brand-600">Whom to Follow</h1>
