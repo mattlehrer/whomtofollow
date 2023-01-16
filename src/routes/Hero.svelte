@@ -22,7 +22,7 @@
 						<p class="text-base font-medium text-gray-900">
 							Enter your fediverse account to get started:
 						</p>
-						<form on:submit|preventDefault class="mt-3 sm:flex">
+						<form on:submit class="mt-3 sm:flex">
 							<label for="account" class="sr-only">Fediverse account</label>
 							<input
 								type="text"
