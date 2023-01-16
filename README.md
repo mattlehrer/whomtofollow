@@ -8,7 +8,7 @@
 - [x] add hero
 - [x] privacy policy
 - [x] add footer
-- [ ] add favicon
-- [ ] add og image/description
+- [x] add favicon
+- [x] add og image/description
 - [ ] add FAQ
 - [ ] readme

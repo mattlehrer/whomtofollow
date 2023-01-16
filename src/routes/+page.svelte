@@ -100,11 +100,6 @@
 		progressNode?.style?.setProperty('--progress', pctDone + $phase1Progress + '%');
 </script>
 
-<svelte:head>
-	<title>Whom to Follow | A Fediverse PYMK</title>
-	<meta name="description" content="Find people to follow on the Fediverse" />
-</svelte:head>
-
 <main class="pt-4">
 	{#if !$accountsYouMightFollow.length}
 		<div class="flex flex-col justify-between min-h-screen">
