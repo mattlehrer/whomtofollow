@@ -15,7 +15,7 @@
 				<div class="sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:text-left">
 					<h1 class="block font-goudy text-brand-600">Whom to Follow</h1>
 					<p
-						class="font-goudy mt-3 text-xl text-gray-500 sm:mt-5 sm:text-xl"
+						class="font-goudy mt-3 text-xl text-brand-800 sm:mt-5 sm:text-xl sm:mx-auto lg:mx-0 opacity-80 sm:max-w-xl"
 						use:balancer={{ enabled: true, ratio: 0.5 }}
 					>
 						Find accounts you'll love by searching the network of accounts you already follow.
