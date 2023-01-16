@@ -6,16 +6,16 @@
 	import { fade } from 'svelte/transition';
 	import VirtualScroll from 'svelte-virtual-scroll-list';
 
-	import SearchForm from './SearchForm.svelte';
-	import type { Account } from '$lib/Account';
-	import Errors from './Errors.svelte';
-	import { accountData, errors, updateAccountData } from '$lib/data';
-	import FollowSuggestion from './FollowSuggestion.svelte';
 	import type { PageData } from './$types';
-	import Footer from '$lib/Footer.svelte';
+	import type { Account } from '$lib/Account';
+	import { accountData, errors, updateAccountData } from '$lib/data';
 	import { fulfilledValues } from '$lib/utils/promises';
 	import { getDomain } from '$lib/getDomain';
 	import { getFollows } from '$lib/getFollows';
+	import Errors from './Errors.svelte';
+	import FollowSuggestion from './FollowSuggestion.svelte';
+	import Footer from '$lib/Footer.svelte';
+	import Hero from './Hero.svelte';
 
 	export let data: PageData;
 
@@ -108,21 +108,19 @@
 <main class="pt-4">
 	{#if !$accountsYouMightFollow.length}
 		<div class="flex h-full flex-col justify-between">
-			<div class="p-4 sm:p-8 md:p-16">
-				<SearchForm bind:account bind:isLoading on:submit={search} />
-			</div>
+			<Hero bind:account bind:isLoading on:submit={search} />
 			<Footer />
 		</div>
 	{:else}
 		<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
-			<div class="p-4 pb-8 sm:p-8 md:p-16" slot="header">
-				<SearchForm bind:account bind:isLoading on:submit={search} />
+			<div class="" slot="header">
+				<Hero bind:account bind:isLoading on:submit={search} />
 			</div>
 
 			<FollowSuggestion account={data} {host} />
 
 			<div slot="footer">
-				<div class="max-w-4xl p-4 sm:p-8 md:px-16">
+				<div class="max-w-4xl p-4 sm:p-8 md:px-20">
 					{#if Object.keys(errors).length}
 						<Errors errors={$errors} />
 					{/if}
