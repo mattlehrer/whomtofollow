@@ -9,8 +9,8 @@
 </script>
 
 <div class="relative overflow-hidden">
-	<div class="relative pt-6 pb-16">
-		<main class="p-4 pb-8 sm:p-8 md:p-16 md:pt-24 max-w-7xl px-8">
+	<div class="relative py-4">
+		<section class="p-4 pb-8 sm:p-8 md:p-16 md:pt-24 max-w-7xl px-8">
 			<div class="lg:grid lg:grid-cols-12 lg:gap-8">
 				<div class="sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:text-left">
 					<h1 class="block font-goudy text-brand-600">Whom to Follow</h1>
@@ -49,18 +49,18 @@
 					</div>
 				</div>
 				<div
-					class="relative mt-12 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:max-w-none lg:items-center -mx-4"
+					class="relative mt-8 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:max-w-none lg:items-center -mx-4"
 				>
-					<div class="relative w-full rounded-lg shadow-lg lg:max-w-lg block overflow-hidden">
-						<img
-							class="w-full"
-							src={distracted}
-							alt="distracted boyfriend meme looking at accounts they follow while accounts you follow is upset"
-						/>
-					</div>
+					<!-- <div class="relative w-full rounded-lg shadow-lg lg:max-w-lg block "> -->
+					<img
+						class="w-full rounded-lg shadow-lg lg:max-w-lg"
+						src={distracted}
+						alt="distracted boyfriend meme looking at accounts they follow while accounts you follow is upset"
+					/>
+					<!-- </div> -->
 				</div>
 			</div>
-		</main>
+		</section>
 	</div>
 </div>
 

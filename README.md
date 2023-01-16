@@ -5,9 +5,9 @@
 - [x] handle form submission
 - [x] loading indicator
 - [x] clean up error display
-- [ ] add hero
+- [x] add hero
 - [x] privacy policy
-- [ ] add footer
+- [x] add footer
 - [ ] add favicon
 - [ ] add og image/description
 - [ ] add FAQ
