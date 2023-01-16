@@ -32,13 +32,13 @@
 								id="account"
 								bind:value={account}
 								pattern={AccountRegex.source}
-								class="block w-full rounded-full border-brand-300 py-3 text-base placeholder-gray-500 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:flex-1 -ml-4 px-4"
+								class="block w-full rounded-full border-brand-300 py-3 text-base placeholder-gray-500 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:flex-1 sm:-ml-4 px-4"
 								placeholder="gargron@mastodon.social"
 							/>
 							<button
 								type="submit"
 								disabled={isLoading}
-								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center -ml-4 disabled:opacity-25"
+								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center  disabled:opacity-25"
 								>Search</button
 							>
 						</form>
