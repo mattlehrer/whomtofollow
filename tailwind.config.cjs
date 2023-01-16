@@ -1,10 +1,11 @@
-const forms = require('@tailwindcss/forms');
-
 const config = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	theme: {
 		extend: {
+			fontFamily: {
+				goudy: ['GoudyBookletter', 'serif'],
+			},
 			colors: {
 				// https://www.tints.dev/?accent=2F3BFA&brand=C97414&slate=FCF1E3
 				brand: {
@@ -47,7 +48,7 @@ const config = {
 		},
 	},
 
-	plugins: [forms],
+	plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 };
 
 module.exports = config;

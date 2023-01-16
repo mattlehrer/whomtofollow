@@ -18,6 +18,7 @@
 		"@sveltejs/adapter-auto": "^1.0.0",
 		"@sveltejs/kit": "^1.1.0",
 		"@tailwindcss/forms": "^0.5.3",
+		"@tailwindcss/typography": "^0.5.9",
 		"@types/debounce": "^1.2.1",
 		"@types/sanitize-html": "^2.8.0",
 		"@typescript-eslint/eslint-plugin": "^5.48.1",
@@ -44,6 +45,7 @@
 	"type": "module",
 	"dependencies": {
 		"debounce": "^1.2.1",
-		"sanitize-html": "^2.8.1"
+		"sanitize-html": "^2.8.1",
+		"svelte-action-balancer": "^1.0.4"
 	}
 }
