@@ -50,7 +50,6 @@ export async function getFollows(
 
 	let follows: Account[] = [];
 	while (page && follows.length < maxFollowersToFetch) {
-		// const response = await fetch(page);
 		let response;
 		try {
 			response = await fetch(page, {
