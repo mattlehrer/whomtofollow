@@ -22,7 +22,6 @@ specifiers:
   prettier-plugin-tailwindcss: ^0.2.1
   sanitize-html: ^2.8.1
   svelte: ^3.55.1
-  svelte-action-balancer: ^1.0.4
   svelte-check: ^2.10.3
   svelte-preprocess: ^4.10.7
   svelte-virtual-scroll-list: ^1.1.0
@@ -35,7 +34,6 @@ specifiers:
 dependencies:
   debounce: 1.2.1
   sanitize-html: 2.8.1
-  svelte-action-balancer: 1.0.4
 
 devDependencies:
   '@playwright/test': 1.29.2
@@ -1980,10 +1978,6 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
-
-  /svelte-action-balancer/1.0.4:
-    resolution: {integrity: sha512-QEJ/UJ576/wt+Sr3Uhswg/6k1s98034QZQBbO3WuNeyPYKa+9w2z/W5SFlusdAi8H7IF+s8BaMptEsUZINfxbw==}
-    dev: false
 
   /svelte-check/2.10.3_gqx7lw3sljhsd4bstor5m2aa2u:
     resolution: {integrity: sha512-Nt1aWHTOKFReBpmJ1vPug0aGysqPwJh2seM1OvICfM2oeyaA62mOiy5EvkXhltGfhCcIQcq2LoE0l1CwcWPjlw==}

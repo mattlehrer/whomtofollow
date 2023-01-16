@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { balancer } from 'svelte-action-balancer';
 	import distracted from '$lib/assets/distracted.jpg';
 
 	export let account: string;
@@ -11,12 +10,11 @@
 <div class="relative overflow-hidden">
 	<div class="relative py-4">
 		<section class="p-4 pb-8 sm:p-8 md:p-16 md:pt-24 max-w-7xl px-8">
-			<div class="lg:grid lg:grid-cols-12 lg:gap-8">
-				<div class="sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:text-left">
+			<div class="lg:flex lg:gap-8">
+				<div class="lg:w-1/2 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:text-left">
 					<h1 class="block font-goudy text-brand-600">Whom to Follow</h1>
 					<p
-						class="font-goudy mt-3 text-xl text-brand-800 sm:mt-5 sm:text-xl sm:mx-auto lg:mx-0 opacity-80 sm:max-w-xl"
-						use:balancer={{ enabled: true, ratio: 0.5 }}
+						class="font-goudy mt-3 text-xl text-brand-800 sm:mt-5 sm:text-xl sm:mx-auto lg:mx-0 opacity-80 sm:max-w-md"
 					>
 						Find accounts you'll love by searching the network of accounts you already follow.
 					</p>
@@ -49,7 +47,7 @@
 					</div>
 				</div>
 				<div
-					class="relative mt-8 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:max-w-none lg:items-center -mx-4"
+					class="lg:w-1/2 relative mt-8 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:max-w-none lg:items-center -mx-4"
 				>
 					<!-- <div class="relative w-full rounded-lg shadow-lg lg:max-w-lg block "> -->
 					<img

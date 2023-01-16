@@ -45,7 +45,6 @@
 	"type": "module",
 	"dependencies": {
 		"debounce": "^1.2.1",
-		"sanitize-html": "^2.8.1",
-		"svelte-action-balancer": "^1.0.4"
+		"sanitize-html": "^2.8.1"
 	}
 }
