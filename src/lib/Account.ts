@@ -24,7 +24,7 @@ export type Account = {
 	last_status_at: string | null;
 	statuses_count: number;
 	followers_count: number;
-	following_count: string;
+	following_count: number;
 	followed_by: Set<string>; // set of mutual followers
 	// following?: Array<string>; // list of accts
 };
