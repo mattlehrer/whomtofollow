@@ -36,7 +36,7 @@
 							<button
 								type="submit"
 								disabled={isLoading}
-								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center  disabled:opacity-25"
+								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center  disabled:opacity-25 plausible-event-name=search"
 								>Search</button
 							>
 						</form>

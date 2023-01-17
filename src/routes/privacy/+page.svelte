@@ -24,8 +24,8 @@
 		Otherwise, all network requests are made directly to the fediverse server from your browser.
 	</p>
 	<p>
-		We may collect anonymized information about Your use of the Service, including how many searches
-		are performed and how many times the follow button is clicked.
+		We collect anonymized information about Your use of the Service, including how many searches are
+		performed and how many times the follow button is clicked.
 	</p>
 
 	<h2>Interpretation and Definitions</h2>

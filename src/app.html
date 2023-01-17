@@ -40,6 +40,12 @@
 			}
 		</style>
 		%sveltekit.head%
+		<script
+			defer
+			data-domain="whomtofollow.com"
+			data-api="/api/wtf/event"
+			src="/api/wtf/script.js"
+		></script>
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
