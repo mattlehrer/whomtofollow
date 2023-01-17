@@ -37,5 +37,5 @@ export type Field = {
 
 export type CustomEmoji = {
 	shortcode: string;
-	string: string;
+	url: string;
 };
