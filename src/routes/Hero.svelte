@@ -22,7 +22,7 @@
 						<p class="text-base font-medium text-gray-900">
 							Enter your fediverse account to get started:
 						</p>
-						<form on:submit class="mt-3 sm:flex">
+						<form on:submit class="mt-3 sm:flex plausible-event-name=search">
 							<label for="account" class="sr-only">Fediverse account</label>
 							<input
 								type="text"
@@ -36,7 +36,7 @@
 							<button
 								type="submit"
 								disabled={isLoading}
-								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center  disabled:opacity-25 plausible-event-name=search"
+								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center  disabled:opacity-25"
 								>Search</button
 							>
 						</form>
