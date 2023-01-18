@@ -16,6 +16,7 @@
 	import FollowSuggestion from './FollowSuggestion.svelte';
 	import Footer from '$lib/Footer.svelte';
 	import Hero from './Hero.svelte';
+	import NoFollows from './NoFollows.svelte';
 
 	export let data: PageData;
 
@@ -24,6 +25,7 @@
 	let account: string = data.account;
 	let host: string;
 	let isLoading = false;
+	let noFollows = false;
 	let dontSuggest: Set<string>;
 
 	const phase1Progress = tweened(0, {
@@ -58,6 +60,7 @@
 			return;
 		}
 		isLoading = true;
+		noFollows = false;
 		$phase1Progress = 20;
 		// dontSuggest.clear();
 		$accountData = new Map<string, Account>();
@@ -66,6 +69,11 @@
 			dontSuggest = new Set<string>([account.replace(/^@/, '')]);
 			const following = await getFollows(account, account, true, 2000);
 			console.log(account, 'follows', following.length, 'accounts');
+
+			if (!following.length) {
+				noFollows = true;
+			}
+
 			for (const f of following) {
 				dontSuggest.add(f.acct);
 			}
@@ -104,6 +112,9 @@
 	{#if !$accountsYouMightFollow.length}
 		<div class="flex flex-col justify-between h-full">
 			<Hero bind:account bind:isLoading on:submit={search} />
+			{#if noFollows}
+				<NoFollows />
+			{/if}
 			<Footer />
 		</div>
 	{:else}
