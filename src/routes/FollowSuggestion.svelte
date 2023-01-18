@@ -21,7 +21,7 @@
 </script>
 
 <article
-	class="block max-w-3xl overflow-hidden hover:bg-brand-100 sm:mx-8 md:mx-16"
+	class="block max-w-3xl overflow-hidden hover:bg-brand-100 sm:mx-4 md:mx-10"
 	on:mouseenter={debounce(updateInfo, 100000, true)}
 >
 	<div class="flex flex-col items-start p-4 md:mx-0 md:flex-row md:p-6">
