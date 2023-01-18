@@ -9,7 +9,9 @@
 - [x] privacy policy
 - [x] add footer
 - [x] add favicon
-- [x] add og image/description
+- [x] add OG image/description
 - [x] handle custom emojis
+- [ ] toggle sort order: highest percentage vs most followed
+- [ ] CORS proxy toggle
 - [ ] add FAQ
 - [ ] readme

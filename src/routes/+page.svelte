@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-	import { derived } from 'svelte/store';
+	import { derived, writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 	import VirtualScroll from 'svelte-virtual-scroll-list';
 
@@ -17,6 +17,7 @@
 	import Footer from '$lib/Footer.svelte';
 	import Hero from './Hero.svelte';
 	import NoFollows from './NoFollows.svelte';
+	import SuggestionsHeader from './SuggestionsHeader.svelte';
 
 	export let data: PageData;
 
@@ -27,6 +28,7 @@
 	let isLoading = false;
 	let noFollows = false;
 	let dontSuggest: Set<string>;
+	const sortOrder = writable<'default' | 'by-count'>('default');
 
 	const phase1Progress = tweened(0, {
 		duration: 5000,
@@ -38,19 +40,27 @@
 	});
 
 	// not sure of a better way to make the accountData map reactive
-	const accountsYouMightFollow = derived([accountData, updateAccountData], ([$accountData]) =>
-		[...$accountData.entries()]
-			.filter(([acct]) => !dontSuggest?.has(acct))
-			.map((a) => a[1])
-			.filter(
-				(a) =>
-					a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST &&
-					a.followed_by.size / a.followers_count <= 1,
-			)
-			.sort(
-				(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
-			)
-			.slice(0, 500),
+	const accountsYouMightFollow = derived(
+		[accountData, updateAccountData, sortOrder],
+		([$accountData]) => {
+			let output = [...$accountData.entries()]
+				.filter(([acct]) => !dontSuggest?.has(acct))
+				.map((a) => a[1])
+				.filter(
+					(a) =>
+						a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST &&
+						a.followed_by.size / a.followers_count <= 1,
+				);
+			if ($sortOrder === 'by-count') {
+				output.sort((a, b) => b.followed_by.size - a.followed_by.size);
+			} else {
+				output.sort(
+					(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
+				);
+			}
+			output = output.slice(0, 500);
+			return output;
+		},
 	);
 
 	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
@@ -118,22 +128,25 @@
 			<Footer />
 		</div>
 	{:else}
-		<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
-			<div class="" slot="header">
-				<Hero bind:account bind:isLoading on:submit={search} />
-			</div>
-
-			<FollowSuggestion account={data} {host} />
-
-			<div slot="footer">
-				<div class="max-w-4xl p-4 sm:p-8 md:px-20">
-					{#if Object.keys(errors).length}
-						<Errors errors={$errors} />
-					{/if}
+		<section>
+			<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
+				<div class="" slot="header">
+					<Hero bind:account bind:isLoading on:submit={search} />
+					<SuggestionsHeader bind:sortOrder={$sortOrder} />
 				</div>
-				<Footer />
-			</div>
-		</VirtualScroll>
+
+				<FollowSuggestion account={data} {host} />
+
+				<div slot="footer">
+					<div class="max-w-4xl p-4 sm:p-8 md:px-20">
+						{#if Object.keys(errors).length}
+							<Errors errors={$errors} />
+						{/if}
+					</div>
+					<Footer />
+				</div>
+			</VirtualScroll>
+		</section>
 	{/if}
 </main>
 {#if isLoading}
