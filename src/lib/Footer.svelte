@@ -1,4 +1,4 @@
-<footer class="mt-auto text-brand-800 opacity-75 text-sm">
+<footer class="mt-auto text-sm text-brand-800 opacity-75">
 	<div class="mx-auto max-w-7xl overflow-hidden py-4 px-6 lg:px-8">
 		<!-- <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
 			<div class="pb-6">
@@ -25,7 +25,7 @@
 				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Partners</a>
 			</div>
 		</nav> -->
-		<div class="mt-4 flex justify-center space-x-10 opacity-75 items-baseline">
+		<div class="mt-4 flex items-baseline justify-center space-x-10 opacity-75">
 			<a
 				href="https://mastodon.social/@mattlehrer"
 				target="_blank"
@@ -56,7 +56,7 @@
 				</svg>
 			</a>
 		</div>
-		<p class="flex py-8 items-center justify-center">
+		<p class="flex items-center justify-center py-8">
 			Made with <svg
 				xmlns="http://www.w3.org/2000/svg"
 				class="mx-1 inline-block h-5 w-5 opacity-70"

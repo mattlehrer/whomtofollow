@@ -6,7 +6,7 @@
 	// TODO: change the copy and image based on server type
 </script>
 
-<section class="px-4 pb-8 sm:px-8 md:px-16 max-w-[40rem]">
+<section class="max-w-[40rem] px-4 pb-8 sm:px-8 md:px-16">
 	<p>
 		We tried and could not get the list of accounts you follow. Either you don't follow any accounts
 		yet (check out <a href="https://fedipages.com/">FediPages</a> to find some) or you have the
@@ -18,11 +18,11 @@
 	<img
 		src={HideSocialGraph}
 		alt="Screenshot of Mastodon settings, with an arrow to Hide Your Social Graph, which is unchecked"
-		class="w-full rounded-lg max-w-[40rem] my-6"
+		class="my-6 w-full max-w-[40rem] rounded-lg"
 	/>
 	<p>
 		Whom to Follow needs access to your social graph to work. If you are willing, please uncheck <a
-			class="underline text-accent-600"
+			class="text-accent-600 underline"
 			target="_blank"
 			rel="noopener noreferrer"
 			href={`https://${host}/settings/profile`}>that setting</a

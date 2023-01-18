@@ -37,7 +37,7 @@
 			? 'flex-col'
 			: 'flex-row-reverse justify-end gap-2'}"
 	>
-		<p class="truncate font-light text-accent-600 flex items-center flex-shrink-0 gap-2">
+		<p class="flex flex-shrink-0 items-center gap-2 truncate font-light text-accent-600">
 			{#if displayName}
 				<span class="inline-block">
 					{displayName}
@@ -50,7 +50,7 @@
 				<span title="Bot account" class="inline-block">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						class="h-5 w-5 mb-px opacity-60 text-brand-900"
+						class="mb-px h-5 w-5 text-brand-900 opacity-60"
 						viewBox="0 0 24 24"
 						><path
 							fill="currentColor"
@@ -63,7 +63,7 @@
 				<span title="Following requires approval" class="inline-block">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						class="h-5 w-5 mb-px opacity-60 text-brand-900"
+						class="mb-px h-5 w-5 text-brand-900 opacity-60"
 						viewBox="0 0 24 24"
 						><path
 							fill="currentColor"
@@ -83,7 +83,7 @@
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
-				class="h-4 w-4 ml-1"
+				class="ml-1 h-4 w-4"
 			>
 				<path
 					fill-rule="evenodd"

@@ -9,12 +9,12 @@
 
 <div class="relative ">
 	<div class="relative py-4">
-		<section class="p-4 pb-8 sm:p-8 md:p-16 lg:pt-24 max-w-[100rem] px-8">
+		<section class="max-w-[100rem] p-4 px-8 pb-8 sm:p-8 md:p-16 lg:pt-24">
 			<div class="lg:flex lg:gap-8">
-				<div class="lg:w-1/2 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:text-left">
+				<div class="sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:w-1/2 lg:text-left">
 					<h1 class="block font-goudy text-brand-600">Whom to Follow</h1>
 					<p
-						class="font-goudy mt-3 text-xl text-brand-800 sm:mt-5 sm:text-xl sm:mx-auto lg:mx-0 opacity-80 sm:max-w-md"
+						class="mt-3 font-goudy text-xl text-brand-800 opacity-80 sm:mx-auto sm:mt-5 sm:max-w-md sm:text-xl lg:mx-0"
 					>
 						Find accounts you'll love by searching the network of accounts you already follow.
 					</p>
@@ -22,7 +22,7 @@
 						<p class="text-base font-medium text-gray-900">
 							Enter your fediverse account to get started:
 						</p>
-						<form on:submit class="mt-3 sm:flex plausible-event-name=Search">
+						<form on:submit class="plausible-event-name=Search mt-3 sm:flex">
 							<label for="account" class="sr-only">Fediverse account</label>
 							<input
 								type="text"
@@ -30,24 +30,24 @@
 								id="account"
 								bind:value={account}
 								pattern={AccountRegex.source}
-								class="block w-full rounded-full border-brand-300 py-3 text-base placeholder-gray-500 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:flex-1 sm:-ml-4 px-4"
+								class="block w-full rounded-full border-brand-300 py-3 px-4 text-base placeholder-gray-500 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:-ml-4 sm:flex-1"
 								placeholder="gargron@mastodon.social"
 							/>
 							<button
 								type="submit"
 								disabled={isLoading}
-								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center  disabled:opacity-25"
+								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0  sm:items-center"
 								>Search</button
 							>
 						</form>
-						<p class="mt-3 text-base text-gray-500 font-goudy">
+						<p class="mt-3 font-goudy text-base text-gray-500">
 							We don't store any account data. Read our
 							<a href="/privacy" class="font-medium text-gray-900 underline">Privacy Policy</a>.
 						</p>
 					</div>
 				</div>
 				<div
-					class="lg:w-1/2 relative mt-8 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:max-w-none lg:items-center -mx-4"
+					class="relative -mx-4 mt-8 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:w-1/2 lg:max-w-none lg:items-center"
 				>
 					<!-- <div class="relative w-full rounded-lg shadow-lg lg:max-w-lg block "> -->
 					<img

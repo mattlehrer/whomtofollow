@@ -110,7 +110,7 @@
 
 <main class="pt-4">
 	{#if !$accountsYouMightFollow.length}
-		<div class="flex flex-col justify-between h-full">
+		<div class="flex h-full flex-col justify-between">
 			<Hero bind:account bind:isLoading on:submit={search} />
 			{#if noFollows}
 				<NoFollows />
