@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -18,10 +17,10 @@ export const GET: RequestHandler = async ({ params }) => {
 			(l: AcctLink) => l.rel === 'self' && l.type === 'application/activity+json',
 		);
 		if (!acctLink) {
-			throw error(404, `No activity pub link for ${acct}`);
+			return new Response(`No activity pub link for ${acct}`, { status: 404 });
 		}
 		return new Response(acctLink.href);
 	} catch (e) {
-		throw error(500, `Failed to fetch webfinger data for ${acct}`);
+		return new Response(`Failed to fetch webfinger data for ${acct}`, { status: 404 });
 	}
 };
