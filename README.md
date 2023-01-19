@@ -11,7 +11,8 @@
 - [x] add favicon
 - [x] add OG image/description
 - [x] handle custom emojis
-- [ ] toggle sort order: highest percentage vs most followed
+- [x] toggle sort order: highest percentage vs most followed
+- [ ] handle servers that require auth token to retrieve following list (e.g., mastodon.cloud, wien.rocks)
 - [ ] CORS proxy toggle
 - [ ] add FAQ
 - [ ] readme
