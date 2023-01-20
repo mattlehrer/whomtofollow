@@ -118,7 +118,7 @@
 		progressNode?.style?.setProperty('--progress', pctDone + $phase1Progress + '%');
 </script>
 
-<main class="pt-4">
+<main class="pt-4 max-w-7xl mx-auto">
 	{#if !$accountsYouMightFollow.length}
 		<div class="flex h-full flex-col justify-between">
 			<Hero bind:account bind:isLoading on:submit={search} />

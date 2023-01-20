@@ -49,9 +49,8 @@
 				<div
 					class="relative -mx-4 mt-8 sm:mx-auto sm:max-w-lg lg:col-span-6 lg:mx-0 lg:mt-0 lg:flex lg:w-1/2 lg:max-w-none lg:items-center"
 				>
-					<!-- <div class="relative w-full rounded-lg shadow-lg lg:max-w-lg block "> -->
 					<img
-						class="w-full rounded-lg shadow-lg lg:max-w-lg"
+						class="w-full rounded-lg shadow-lg"
 						src={distracted}
 						alt="distracted boyfriend meme looking at accounts they follow while accounts you follow is upset"
 					/>
