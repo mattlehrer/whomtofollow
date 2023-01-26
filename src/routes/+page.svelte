@@ -46,11 +46,12 @@
 			let output = [...$accountData.entries()]
 				.filter(([acct]) => !dontSuggest?.has(acct))
 				.map((a) => a[1])
-				.filter(
-					(a) =>
-						a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST &&
-						a.followed_by.size / a.followers_count <= 1,
-				);
+				.filter((a) => a.followed_by.size / a.followers_count <= 1);
+			if (output.length > 300){
+				let tmp = output.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST);
+			if (tmp.length > 50) {
+				output = tmp;
+			}
 			if ($sortOrder === 'by-count') {
 				output.sort((a, b) => b.followed_by.size - a.followed_by.size);
 			} else {
