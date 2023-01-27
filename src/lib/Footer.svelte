@@ -4,30 +4,10 @@
 			<div class="pb-6">
 				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">About</a>
 			</div>
-
-			<div class="pb-6">
-				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Blog</a>
-			</div>
-
-			<div class="pb-6">
-				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Jobs</a>
-			</div>
-
-			<div class="pb-6">
-				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Press</a>
-			</div>
-
-			<div class="pb-6">
-				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Accessibility</a>
-			</div>
-
-			<div class="pb-6">
-				<a href="#" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Partners</a>
-			</div>
 		</nav> -->
 		<div class="mt-4 flex items-baseline justify-center space-x-10 opacity-75">
 			<a
-				href="https://mastodon.social/@mattlehrer"
+				href="https://definitely.social/@mattlehrer"
 				target="_blank"
 				rel="noreferrer"
 				class="hover:text-brand-500"
