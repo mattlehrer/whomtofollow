@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import {
 		Popover,
 		PopoverButton,
@@ -8,7 +8,7 @@
 		RadioGroupOption,
 	} from '@rgossiaux/svelte-headlessui';
 
-	export let sortOrder = 'default';
+	export let sortOrder: 'default' | 'by-count' = 'default';
 </script>
 
 <div class="flex max-w-3xl items-center justify-between px-4 pt-3 pb-4  sm:mx-8 sm:px-6 md:mx-10">
