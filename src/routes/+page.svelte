@@ -132,25 +132,23 @@
 			<Footer />
 		</div>
 	{:else}
-		<section>
-			<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
-				<div class="" slot="header">
-					<Hero bind:account bind:isLoading on:submit={search} />
-					<SuggestionsHeader bind:sortOrder={$sortOrder} />
-				</div>
+		<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
+			<div class="" slot="header">
+				<Hero bind:account bind:isLoading on:submit={search} />
+				<SuggestionsHeader bind:sortOrder={$sortOrder} />
+			</div>
 
-				<FollowSuggestion account={data} {host} />
+			<FollowSuggestion account={data} {host} />
 
-				<div slot="footer">
-					<div class="max-w-4xl p-4 sm:p-8 md:px-20">
-						{#if Object.keys(errors).length}
-							<Errors errors={$errors} />
-						{/if}
-					</div>
-					<Footer />
+			<div slot="footer">
+				<div class="max-w-4xl p-4 sm:p-8 md:px-20">
+					{#if Object.keys(errors).length}
+						<Errors errors={$errors} />
+					{/if}
 				</div>
-			</VirtualScroll>
-		</section>
+				<Footer />
+			</div>
+		</VirtualScroll>
 	{/if}
 </main>
 {#if isLoading}
