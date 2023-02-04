@@ -31,12 +31,8 @@
 	}
 </script>
 
-<div class="flex flex-col">
-	<div
-		class="flex truncate sm:text-lg {account.display_name
-			? 'flex-col'
-			: 'flex-row-reverse justify-end gap-2'}"
-	>
+<div class="flex flex-col gap-4">
+	<div class="flex truncate text-lg gap-0 flex-col">
 		<p class="flex flex-shrink-0 items-center gap-2 truncate font-light text-accent-600">
 			{#if displayName}
 				<span class="inline-block">
@@ -97,9 +93,22 @@
 				/>
 			</svg>
 		</a>
+		<p
+			class="text-base font-extralight opacity-65"
+			title="total posts including replies and boosts"
+		>
+			<span class="font-light">{account.statuses_count}</span> posts since {new Date(
+				account.created_at,
+			).toLocaleDateString(undefined, {
+				dateStyle: 'medium',
+			})} • {(
+				account.statuses_count /
+				((new Date().getTime() - new Date(account.created_at).getTime()) / 1000 / 60 / 60 / 24)
+			).toFixed(1)} posts per day
+		</p>
 	</div>
-	<div class="mt-2">
-		<p class="h-auto w-full text-sm text-slate-900">{@html sanitize(account.note)}</p>
-	</div>
+	{#if account.note}
+		<p class="h-auto w-full text-base text-slate-900 opacity-85">{@html sanitize(account.note)}</p>
+	{/if}
 	<FollowerAvatars {account} />
 </div>
