@@ -133,9 +133,9 @@
 
 <svelte:window bind:innerWidth />
 
-<main class="mx-auto max-w-7xl">
+<main>
 	{#if !$accountsYouMightFollow.length}
-		<div class="flex h-full flex-col justify-between">
+		<div class="mx-auto flex h-full max-w-7xl flex-col justify-between">
 			<Hero bind:account bind:isLoading on:submit={search} />
 			{#if noFollows}
 				<NoFollows />
@@ -144,14 +144,14 @@
 		</div>
 	{:else}
 		<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
-			<div class="" slot="header">
+			<div class="mx-auto max-w-7xl" slot="header">
 				<Hero bind:account bind:isLoading on:submit={search} />
 				<SuggestionsHeader bind:sortOrder={$sortOrder} />
 			</div>
 
 			<FollowSuggestion account={data} {host} />
 
-			<div slot="footer">
+			<div slot="footer" class="mx-auto max-w-7xl">
 				<div class="max-w-4xl p-4 sm:p-8 md:px-20">
 					{#if Object.keys(errors).length}
 						<Errors errors={$errors} />
