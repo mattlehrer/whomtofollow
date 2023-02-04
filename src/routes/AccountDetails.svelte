@@ -32,7 +32,7 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<div class="flex truncate text-lg gap-0 flex-col">
+	<div class="flex flex-col gap-0 truncate text-lg">
 		<p class="flex flex-shrink-0 items-center gap-2 truncate font-light text-accent-600">
 			{#if displayName}
 				<span class="inline-block">
@@ -94,12 +94,11 @@
 			</svg>
 		</a>
 		<p
-			class="text-base font-extralight opacity-65"
+			class="opacity-65 text-base font-extralight"
 			title="total posts including replies and boosts"
 		>
-			<span class="font-light">{account.statuses_count}</span> posts since {new Date(
-				account.created_at,
-			).toLocaleDateString(undefined, {
+			<span class="font-light">{new Intl.NumberFormat().format(account.statuses_count)}</span> posts
+			since {new Date(account.created_at).toLocaleDateString(undefined, {
 				dateStyle: 'medium',
 			})} • {(
 				account.statuses_count /
@@ -108,7 +107,7 @@
 		</p>
 	</div>
 	{#if account.note}
-		<p class="h-auto w-full text-base text-slate-900 opacity-85">{@html sanitize(account.note)}</p>
+		<p class="opacity-85 h-auto w-full text-base text-slate-900">{@html sanitize(account.note)}</p>
 	{/if}
 	<FollowerAvatars {account} />
 </div>
