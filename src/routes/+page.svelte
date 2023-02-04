@@ -28,6 +28,8 @@
 	let isLoading = false;
 	let noFollows = false;
 	let dontSuggest: Set<string>;
+	let maxListSize = 250;
+	let innerWidth = 400;
 	const sortOrder = writable<'default' | 'by-count'>('default');
 
 	const phase1Progress = tweened(0, {
@@ -37,6 +39,7 @@
 
 	onMount(() => {
 		dontSuggest = new Set();
+		maxListSize = Math.floor(Math.min(innerWidth / 5, 250));
 	});
 
 	// not sure of a better way to make the accountData map reactive
@@ -49,7 +52,7 @@
 				.filter((a) => a.followed_by.size / a.followers_count <= 1);
 
 			// 300 and 50 are arbitrary numbers that could use some testing
-			if (output.length > 300) {
+			if (output.length > maxListSize * 2) {
 				let tmp = output.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST);
 				if (tmp.length > 50) {
 					output = tmp;
@@ -62,7 +65,7 @@
 					(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
 				);
 			}
-			output = output.slice(0, 500);
+			output = output.slice(0, maxListSize);
 			return output;
 		},
 	);
@@ -122,7 +125,9 @@
 		progressNode?.style?.setProperty('--progress', pctDone + $phase1Progress + '%');
 </script>
 
-<main class="mx-auto max-w-7xl pt-4">
+<svelte:window bind:innerWidth />
+
+<main class="mx-auto max-w-7xl">
 	{#if !$accountsYouMightFollow.length}
 		<div class="flex h-full flex-col justify-between">
 			<Hero bind:account bind:isLoading on:submit={search} />
