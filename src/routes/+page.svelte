@@ -30,7 +30,9 @@
 	let dontSuggest: Set<string>;
 	let maxListSize = 250;
 	let innerWidth = 400;
-	const sortOrder = writable<'default' | 'by-count'>('default');
+	const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
+		'default',
+	);
 
 	const phase1Progress = tweened(0, {
 		duration: 5000,
@@ -60,6 +62,10 @@
 			}
 			if ($sortOrder === 'by-count') {
 				output.sort((a, b) => b.followed_by.size - a.followed_by.size);
+			} else if ($sortOrder === 'most-followers') {
+				output.sort((a, b) => b.followers_count - a.followers_count);
+			} else if ($sortOrder === 'least-followers') {
+				output.sort((a, b) => a.followers_count - b.followers_count);
 			} else {
 				output.sort(
 					(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
