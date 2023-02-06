@@ -97,13 +97,17 @@
 			class="opacity-65 text-base font-extralight"
 			title="total posts including replies and boosts"
 		>
+			<span class="font-light"
+				>{(
+					account.statuses_count /
+					((new Date().getTime() - new Date(account.created_at).getTime()) / 1000 / 60 / 60 / 24)
+				).toFixed(1)}</span
+			>
+			posts per day •
 			<span class="font-light">{new Intl.NumberFormat().format(account.statuses_count)}</span> posts
 			since {new Date(account.created_at).toLocaleDateString(undefined, {
 				dateStyle: 'medium',
-			})} • {(
-				account.statuses_count /
-				((new Date().getTime() - new Date(account.created_at).getTime()) / 1000 / 60 / 60 / 24)
-			).toFixed(1)} posts per day
+			})}
 		</p>
 	</div>
 	{#if account.note}
