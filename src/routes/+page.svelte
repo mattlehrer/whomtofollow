@@ -49,7 +49,7 @@
 		[accountData, updateAccountData, sortOrder],
 		([$accountData]) => {
 			let output = [...$accountData.entries()]
-				.filter(([acct]) => !dontSuggest?.has(acct))
+				.filter(([acct]) => !dontSuggest?.has(acct.toLowerCase()))
 				.map((a) => a[1])
 				.filter((a) => a.followed_by.size / a.followers_count <= 1);
 
@@ -89,7 +89,7 @@
 		$accountData = new Map<string, Account>();
 
 		try {
-			dontSuggest = new Set<string>([account.replace(/^@/, '')]);
+			dontSuggest = new Set<string>([account.replace(/^@/, '').toLowerCase()]);
 			const following = await getFollows(account, account, true, 2000);
 			console.log(account, 'follows', following.length, 'accounts');
 
@@ -98,7 +98,7 @@
 			}
 
 			for (const f of following) {
-				dontSuggest.add(f.acct);
+				dontSuggest.add(f.acct.toLowerCase());
 			}
 			// save host for follow links
 			host = await getDomain(account);
@@ -108,6 +108,7 @@
 				.sort(() => Math.random() - 0.5)
 				.map((f) => trackProgress(getFollows(f.acct, account, false)));
 			await fulfilledValues(followingPromises);
+			console.log('here');
 		} catch (error) {
 			console.log({ error });
 		}
