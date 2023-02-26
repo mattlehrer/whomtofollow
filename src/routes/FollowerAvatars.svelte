@@ -43,7 +43,13 @@
 {#if showFollowers}
 	<div transition:slide class="mt-2  max-w-full text-sm">
 		<p class="my-2 font-medium">
-			You follow {followers.length.toLocaleString()} of {account.username}'s {account.followers_count.toLocaleString()}
+			You follow {followers.length.toLocaleString()} of {account.username}'s
+			{#if account?.followers_count}
+				<!-- not all servers return followers_count -->
+				<span>
+					{account.followers_count.toLocaleString()}
+				</span>
+			{/if}
 			followers:
 		</p>
 		<p class="font-light">
