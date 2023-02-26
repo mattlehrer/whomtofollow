@@ -1,3 +1,4 @@
+import { Timeout } from '$lib/utils/timeout';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -5,6 +6,9 @@ export const GET: RequestHandler = async ({ params }) => {
 	try {
 		const webfingerResp = await fetch(
 			`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
+			{
+				signal: Timeout(3000).signal,
+			},
 		);
 		const webfinger = await webfingerResp.json();
 		const links = webfinger.links;
