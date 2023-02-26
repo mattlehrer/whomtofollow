@@ -27,7 +27,7 @@
 	let isLoading = false;
 	let noFollows = false;
 	let dontSuggest: Set<string>;
-	let maxListSize = 150;
+	let maxListSize = 75;
 	let innerWidth = 400;
 	const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
 		'default',
@@ -40,7 +40,7 @@
 
 	onMount(() => {
 		dontSuggest = new Set();
-		maxListSize = Math.floor(Math.min(innerWidth / 5, 150));
+		maxListSize = Math.floor(Math.min(innerWidth / 5, 75));
 	});
 
 	// not sure of a better way to make the accountData map reactive
