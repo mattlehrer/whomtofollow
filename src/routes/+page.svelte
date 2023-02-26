@@ -53,7 +53,6 @@
 				.map((a) => a[1])
 				.filter((a) => a.followed_by.size / a.followers_count <= 1);
 
-			// 300 and 50 are arbitrary numbers that could use some testing
 			if (output.length > maxListSize * 2) {
 				let tmp = output.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST);
 				if (tmp.length > 50) {
@@ -108,7 +107,6 @@
 				.sort(() => Math.random() - 0.5)
 				.map((f) => trackProgress(getFollows(f.acct, account, false)));
 			await fulfilledValues(followingPromises);
-			console.log('here');
 		} catch (error) {
 			console.log({ error });
 		}
