@@ -2,6 +2,7 @@
 	import { debounce } from 'debounce';
 	import AccountDetails from './AccountDetails.svelte';
 	import type { Account } from '../lib/Account';
+	import { Timeout } from '$lib/utils/timeout';
 
 	export let account: Account;
 	export let host: string;
@@ -10,7 +11,9 @@
 
 	async function updateInfo() {
 		try {
-			const res = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${account.acct}`);
+			const res = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${account.acct}`, {
+				signal: Timeout(5000).signal,
+			});
 			const updatedAccount = await res.json();
 			account.followers_count = updatedAccount.followers_count;
 			account.id = updatedAccount.id;
