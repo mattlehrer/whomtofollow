@@ -4,7 +4,6 @@
 	import { tweened } from 'svelte/motion';
 	import { derived, writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
-	import VirtualScroll from 'svelte-virtual-scroll-list';
 
 	import type { PageData } from './$types';
 	import type { Account } from '$lib/Account';
