@@ -31,7 +31,7 @@ export async function getDomain(acct: string): Promise<string> {
 		const webfingerResp = await fetch(
 			`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
 			{
-				signal: Timeout(2000).signal,
+				signal: Timeout(5000).signal,
 			},
 		);
 		const webfinger = await webfingerResp.json();
@@ -55,7 +55,7 @@ export async function getDomain(acct: string): Promise<string> {
 	}
 	try {
 		const webfingerResp = await fetch(`/api/webfinger/${domain}/${acct}`, {
-			signal: Timeout(2000).signal,
+			signal: Timeout(5000).signal,
 		});
 		const acctLinkHref = await webfingerResp.text();
 		const acctUrl = new URL(acctLinkHref);

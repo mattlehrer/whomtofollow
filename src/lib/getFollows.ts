@@ -54,7 +54,7 @@ export async function getFollows(
 		let response;
 		try {
 			response = await fetch(page, {
-				signal: Timeout(1000 * (direct ? 1 : 3)).signal,
+				signal: Timeout(5000 * (direct ? 1 : 3)).signal,
 			});
 		} catch (e: unknown) {
 			// console.log({ e });

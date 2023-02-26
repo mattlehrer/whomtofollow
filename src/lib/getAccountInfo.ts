@@ -13,12 +13,12 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 	try {
 		const domain = await getDomain(acct);
 		let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`, {
-			signal: Timeout(2000).signal,
+			signal: Timeout(5000).signal,
 		});
 		if (!accountInfoRes.ok) {
 			if (accountInfoRes.type === 'cors') {
 				accountInfoRes = await fetch(`/api/acct/${acct}`, {
-					signal: Timeout(2000).signal,
+					signal: Timeout(5000).signal,
 				});
 			}
 		}
@@ -32,7 +32,7 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 			// Pleroma error = "Can't find user"
 			const nickname = acct.split('@')[0];
 			const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-				signal: Timeout(2000).signal,
+				signal: Timeout(5000).signal,
 			});
 			accountInfo = await nonMastodonInfoRes.json();
 		} else if (
@@ -43,7 +43,7 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 			console.log('Friendica');
 			const nickname = acct.split('@')[0];
 			const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-				signal: Timeout(2000).signal,
+				signal: Timeout(5000).signal,
 			});
 			accountInfo = await nonMastodonInfoRes.json();
 		}
