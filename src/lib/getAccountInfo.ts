@@ -52,7 +52,7 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 			accountInfo = await getAccountInfo(accountInfo.moved.acct);
 		}
 		get(accountData).set(acct, { ...accountInfo, followed_by: new Set() });
-		// updateAccountData.update((b) => !b);
+		updateAccountData.update((b) => !b);
 	} catch (e) {
 		// console.log({ e });
 		throw new Error(`Error getting ${acct} info`);
