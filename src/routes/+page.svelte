@@ -28,7 +28,7 @@
 	let isLoading = false;
 	let noFollows = false;
 	let dontSuggest: Set<string>;
-	let maxListSize = 250;
+	let maxListSize = 150;
 	let innerWidth = 400;
 	const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
 		'default',
@@ -41,7 +41,7 @@
 
 	onMount(() => {
 		dontSuggest = new Set();
-		maxListSize = Math.floor(Math.min(innerWidth / 5, 250));
+		maxListSize = Math.floor(Math.min(innerWidth / 5, 150));
 	});
 
 	// not sure of a better way to make the accountData map reactive
@@ -142,23 +142,21 @@
 			<Footer />
 		</div>
 	{:else}
-		<VirtualScroll data={$accountsYouMightFollow} key="id" let:data>
-			<div class="mx-auto max-w-7xl" slot="header">
-				<Hero bind:account bind:isLoading on:submit={search} />
-				<SuggestionsHeader bind:sortOrder={$sortOrder} />
+		<div class="mx-auto max-w-7xl">
+			<Hero bind:account bind:isLoading on:submit={search} />
+			<SuggestionsHeader bind:sortOrder={$sortOrder} />
+		</div>
+		{#each $accountsYouMightFollow as suggestion (suggestion.acct)}
+			<FollowSuggestion account={suggestion} {host} />
+		{/each}
+		<div class="mx-auto max-w-7xl">
+			<div class="max-w-4xl p-4 sm:p-8 md:px-20">
+				{#if Object.keys(errors).length}
+					<Errors errors={$errors} />
+				{/if}
 			</div>
-
-			<FollowSuggestion account={data} {host} />
-
-			<div slot="footer" class="mx-auto max-w-7xl">
-				<div class="max-w-4xl p-4 sm:p-8 md:px-20">
-					{#if Object.keys(errors).length}
-						<Errors errors={$errors} />
-					{/if}
-				</div>
-				<Footer />
-			</div>
-		</VirtualScroll>
+			<Footer />
+		</div>
 	{/if}
 </main>
 {#if isLoading}
