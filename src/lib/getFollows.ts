@@ -7,7 +7,7 @@ import { get } from 'svelte/store';
 import { getDomain } from './getDomain';
 import { Timeout } from './utils/timeout';
 
-const DEFAULT_MAX_FOLLOWERS_TO_FETCH = 1000;
+const DEFAULT_MAX_FOLLOWERS_TO_FETCH = 500;
 
 export async function getFollows(
 	ofAcct: Account['acct'],
@@ -23,7 +23,7 @@ export async function getFollows(
 		return match?.[1];
 	}
 
-	if (!direct && ofAcct === forSearcher) {
+	if (!direct && ofAcct.toLowerCase() === forSearcher.toLowerCase()) {
 		return [];
 	}
 	let accountInfo;
@@ -50,10 +50,11 @@ export async function getFollows(
 
 	let follows: Account[] = [];
 	while (page && follows.length < maxFollowersToFetch) {
+		// console.log('paging', { page, followsLength: follows.length, maxFollowersToFetch });
 		let response;
 		try {
 			response = await fetch(page, {
-				signal: Timeout(2000 * (direct ? 1 : 3)).signal,
+				signal: Timeout(1000 * (direct ? 1 : 3)).signal,
 			});
 		} catch (e: unknown) {
 			// console.log({ e });
