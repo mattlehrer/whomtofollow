@@ -35,6 +35,13 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 				signal: Timeout(5000).signal,
 			});
 			accountInfo = await nonMastodonInfoRes.json();
+		} else if (accountInfo.error === "Couldn't find user") {
+			// Rebased (Pleroma fork) error = "Couldn't find user"
+			const nickname = acct.split('@')[0];
+			const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
+				signal: Timeout(5000).signal,
+			});
+			accountInfo = await nonMastodonInfoRes.json();
 		} else if (
 			accountInfo.error_description ===
 			// Friendica error_description = "The API endpoint is currently not implemented but might be in the future.
