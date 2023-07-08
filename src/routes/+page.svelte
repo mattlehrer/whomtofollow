@@ -85,9 +85,10 @@
 		$accountData = new Map<string, Account>();
 
 		try {
-			dontSuggest = new Set<string>([account.replace(/^@/, '').toLowerCase()]);
-			const following = await getFollows(account, account, true, 2000);
-			console.log(account, 'follows', following.length, 'accounts');
+			const withoutAt = account.replace(/^@/, '').toLowerCase();
+			dontSuggest = new Set<string>([withoutAt]);
+			const following = await getFollows(withoutAt, withoutAt, true, 2000);
+			console.log(withoutAt, 'follows', following.length, 'accounts');
 
 			if (!following.length) {
 				noFollows = true;
@@ -97,12 +98,12 @@
 				dontSuggest.add(f.acct.toLowerCase());
 			}
 			// save host for follow links
-			host = await getDomain(account);
+			host = await getDomain(withoutAt);
 
 			// get 2nd level follows
 			const followingPromises = following
 				.sort(() => Math.random() - 0.5)
-				.map((f) => trackProgress(getFollows(f.acct, account, false)));
+				.map((f) => trackProgress(getFollows(f.acct, withoutAt, false)));
 			await fulfilledValues(followingPromises);
 		} catch (error) {
 			console.log({ error });
