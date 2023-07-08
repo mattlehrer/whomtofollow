@@ -1,3 +1,5 @@
+export const AccountRegex = /^@?[\w\-]+@[\w\-]+(\.[\w\-]+)+$/;
+
 // https://docs.joinmastodon.org/entities/Account/
 export type Account = {
 	id: string;

@@ -1,13 +1,12 @@
 <script lang="ts">
+	import { AccountRegex } from '$lib/Account';
 	import distracted from '$lib/assets/distracted.jpg';
 
 	export let account: string;
 	export let isLoading: boolean;
-
-	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 </script>
 
-<div class="relative ">
+<div class="relative">
 	<div class="relative py-4">
 		<section class="max-w-[100rem] p-4 px-8 pb-8 sm:p-8 md:p-16 lg:pt-24">
 			<div class="lg:flex lg:gap-8">
@@ -30,13 +29,13 @@
 								id="account"
 								bind:value={account}
 								pattern={AccountRegex.source}
-								class="block w-full rounded-full border-brand-300 py-3 px-4 text-base placeholder-gray-500 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:-ml-4 sm:flex-1"
+								class="block w-full rounded-full border-brand-300 px-4 py-3 text-base placeholder-gray-500 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:-ml-4 sm:flex-1"
 								placeholder="gargron@mastodon.social"
 							/>
 							<button
 								type="submit"
 								disabled={isLoading}
-								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25 sm:mt-0 sm:ml-3 sm:inline-flex sm:w-auto sm:flex-shrink-0  sm:items-center"
+								class="mt-3 w-full rounded-full border border-transparent bg-brand-700 px-6 py-3 text-base font-medium text-brand-50 shadow-sm hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-25 sm:ml-3 sm:mt-0 sm:inline-flex sm:w-auto sm:flex-shrink-0 sm:items-center"
 								>Search</button
 							>
 						</form>

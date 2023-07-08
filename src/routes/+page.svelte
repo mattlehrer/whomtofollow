@@ -6,7 +6,7 @@
 	import { fade } from 'svelte/transition';
 
 	import type { PageData } from './$types';
-	import type { Account } from '$lib/Account';
+	import { AccountRegex, type Account } from '$lib/Account';
 	import { accountData, errors, updateAccountData } from '$lib/data';
 	import { fulfilledValues } from '$lib/utils/promises';
 	import { getDomain } from '$lib/getDomain';
@@ -73,8 +73,6 @@
 			return output;
 		},
 	);
-
-	const AccountRegex = /^@?[\w-]+@[\w-]+(\.[\w-]+)+$/;
 
 	async function search() {
 		if (!AccountRegex.test(account)) {
