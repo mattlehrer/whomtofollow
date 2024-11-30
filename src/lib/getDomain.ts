@@ -58,6 +58,7 @@ export async function getDomain(acct: string): Promise<string> {
 			signal: Timeout(5000).signal,
 		});
 		const acctLinkHref = await webfingerResp.text();
+		console.log({ acctLinkHref });
 		const acctUrl = new URL(acctLinkHref);
 		get(hosts).set(server, acctUrl.host);
 		return acctUrl.host;

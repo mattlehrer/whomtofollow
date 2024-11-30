@@ -1,20 +1,14 @@
 <script lang="ts">
-	import {
-		Popover,
-		PopoverButton,
-		PopoverPanel,
-		RadioGroup,
-		RadioGroupLabel,
-		RadioGroupOption,
-	} from '@rgossiaux/svelte-headlessui';
+	import { Popover, RadioGroup } from "bits-ui";
+
 
 	export let sortOrder: 'default' | 'by-count' | 'most-followers' | 'least-followers' = 'default';
 </script>
 
 <div class="flex max-w-3xl items-center justify-between px-4 pb-4 pt-3 sm:mx-4 md:mx-10 md:px-6">
 	<h2 class="text-lg sm:text-xl">Some new accounts you might like</h2>
-	<Popover style="position: relative;">
-		<PopoverButton class=" rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-brand-600">
+	<Popover.Root>
+		<Popover.Trigger class=" rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-brand-600">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -30,13 +24,13 @@
 					d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5"
 				/>
 			</svg>
-		</PopoverButton>
+		</Popover.Trigger>
 
-		<PopoverPanel
+		<Popover.Content
 			class="absolute right-0 z-10 mt-2 min-w-max origin-top-right rounded-md bg-white py-2 shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none "
 		>
 			<div class="block px-4 py-2 text-sm text-brand-900">
-				<RadioGroup class="space-y-3 pt-1" bind:value={sortOrder}>
+				<!-- <RadioGroup class="space-y-3 pt-1" bind:value={sortOrder}>
 					<RadioGroupLabel class="px-5 text-base font-bold">Sort Order</RadioGroupLabel>
 					<RadioGroupOption value="default" let:checked let:active>
 						<span
@@ -132,10 +126,10 @@
 							/>
 						</span>
 					</RadioGroupOption>
-				</RadioGroup>
+				</RadioGroup> -->
 			</div>
-		</PopoverPanel>
-	</Popover>
+		</Popover.Content>
+	</Popover.Root>
 </div>
 
 <style>
