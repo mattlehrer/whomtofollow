@@ -36,11 +36,7 @@
 			class="absolute right-0 z-10 mt-2 min-w-max origin-top-right rounded-md bg-white py-2 shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none "
 		>
 			<div class="block px-4 py-2 text-sm text-brand-900">
-				<RadioGroup
-					class="space-y-3 pt-1"
-					value={sortOrder}
-					on:change={(e) => (sortOrder = e.detail)}
-				>
+				<RadioGroup class="space-y-3 pt-1" bind:value={sortOrder}>
 					<RadioGroupLabel class="px-5 text-base font-bold">Sort Order</RadioGroupLabel>
 					<RadioGroupOption value="default" let:checked let:active>
 						<span
