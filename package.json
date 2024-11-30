@@ -45,7 +45,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"debounce": "^1.2.1",
+		"debounce": "^2.2.0",
 		"sanitize-html": "^2.13.1"
 	}
 }
