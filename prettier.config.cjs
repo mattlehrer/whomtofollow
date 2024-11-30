@@ -4,6 +4,5 @@ module.exports = {
 	singleQuote: true,
 	trailingComma: 'all',
 	printWidth: 100,
-	pluginSearchDirs: false,
 	overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }],
 };
