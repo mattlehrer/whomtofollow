@@ -41,7 +41,7 @@
 	</div>
 </button>
 {#if showFollowers}
-	<div transition:slide class="mt-2  max-w-full text-sm">
+	<div transition:slide class="mt-2 max-w-full text-sm">
 		<p class="my-2 font-medium">
 			You follow {followers.length.toLocaleString()} of {account.username}'s
 			{#if account?.followers_count}

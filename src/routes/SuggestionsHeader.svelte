@@ -11,7 +11,7 @@
 	export let sortOrder: 'default' | 'by-count' | 'most-followers' | 'least-followers' = 'default';
 </script>
 
-<div class="flex max-w-3xl items-center justify-between px-4 pt-3 pb-4 sm:mx-4 md:mx-10 md:px-6">
+<div class="flex max-w-3xl items-center justify-between px-4 pb-4 pt-3 sm:mx-4 md:mx-10 md:px-6">
 	<h2 class="text-lg sm:text-xl">Some new accounts you might like</h2>
 	<Popover style="position: relative;">
 		<PopoverButton class=" rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-brand-600">

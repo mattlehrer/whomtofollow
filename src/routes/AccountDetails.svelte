@@ -94,7 +94,7 @@
 			</svg>
 		</a>
 		<p
-			class="opacity-65 text-base font-extralight"
+			class="text-base font-extralight opacity-65"
 			title="total posts including replies and boosts"
 		>
 			<span class="font-light"
@@ -111,7 +111,7 @@
 		</p>
 	</div>
 	{#if account.note}
-		<p class="opacity-85 h-auto w-full text-base text-slate-900">{@html sanitize(account.note)}</p>
+		<p class="h-auto w-full text-base text-slate-900 opacity-85">{@html sanitize(account.note)}</p>
 	{/if}
 	<FollowerAvatars {account} />
 </div>

@@ -44,9 +44,8 @@ export async function getFollows(
 	}
 	const domain = await getDomain(ofAcct);
 
-	let page:
-		| string
-		| undefined = `https://${domain}/api/v1/accounts/${accountInfo.id}/following?limit=80`;
+	let page: string | undefined =
+		`https://${domain}/api/v1/accounts/${accountInfo.id}/following?limit=80`;
 
 	let follows: Account[] = [];
 	while (page && follows.length < maxFollowersToFetch) {
