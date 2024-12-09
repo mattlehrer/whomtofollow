@@ -20,18 +20,18 @@ export async function saveAcctInfo({
 			throw new Error('account should exist');
 		}
 		accountData.set(accountToSave.acct, {
-				...account,
-				acct: accountToSave.acct,
-				followers_count: Math.max(account.followers_count, accountToSave.followers_count),
-				followed_by: account.followed_by.add(followedBy),
-			});
+			...account,
+			acct: accountToSave.acct,
+			followers_count: Math.max(account.followers_count, accountToSave.followers_count),
+			followed_by: account.followed_by.add(followedBy),
+		});
 		updateAccountData.update((b) => !b);
 	} else {
 		if (!direct) {
 			accountData.set(accountToSave.acct, {
-					...accountToSave,
-					followed_by: new SvelteSet([followedBy]),
-				});
+				...accountToSave,
+				followed_by: new SvelteSet([followedBy]),
+			});
 			updateAccountData.update((b) => !b);
 		} else {
 			// different servers use different account IDs
@@ -42,14 +42,17 @@ export async function saveAcctInfo({
 			const domain = await getDomain(followedBy);
 			if (domain === fDomain) {
 				accountData.set(accountToSave.acct, {
-						...accountToSave,
-						followed_by: new SvelteSet([followedBy]),
-					});
+					...accountToSave,
+					followed_by: new SvelteSet([followedBy]),
+				});
 				updateAccountData.update((b) => !b);
 			} else {
 				try {
 					const fInfo = await getAccountInfo(accountToSave.acct);
-					accountData.set(accountToSave.acct, { ...fInfo, followed_by: new SvelteSet([followedBy]) });					
+					accountData.set(accountToSave.acct, {
+						...fInfo,
+						followed_by: new SvelteSet([followedBy]),
+					});
 					updateAccountData.update((b) => !b);
 				} catch (error) {
 					console.debug('Problem getting account info for', accountToSave.acct);

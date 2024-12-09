@@ -18,7 +18,7 @@
 	import SuggestionsHeader from './SuggestionsHeader.svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
-	let {data}: {data:PageData} = $props();
+	let { data }: { data: PageData } = $props();
 
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
 
@@ -44,37 +44,39 @@
 
 	let pendingFetches = $state(0);
 	let progressNode: HTMLElement | null = $state(null);
-	const pctDone = $derived(dontSuggest ? (80 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1) : 0);
+	const pctDone = $derived(
+		dontSuggest ? (80 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1) : 0,
+	);
 	$effect(() => {
 		progressNode?.style?.setProperty('--progress', pctDone + phase1Progress.current + '%');
 	});
 
 	// not sure of a better way to make the accountData map reactive
 	const accountsYouMightFollow = $derived.by(() => {
-			let output = [...accountData.entries()]
-				.filter(([acct]) => !dontSuggest?.has(acct.toLowerCase()))
-				.map((a) => a[1])
-				.filter((a) => a.followed_by.size / a.followers_count <= 1);
+		let output = [...accountData.entries()]
+			.filter(([acct]) => !dontSuggest?.has(acct.toLowerCase()))
+			.map((a) => a[1])
+			.filter((a) => a.followed_by.size / a.followers_count <= 1);
 
-			if (output.length > maxListSize * 2) {
-				let tmp = output.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST);
-				if (tmp.length > 50) {
-					output = tmp;
-				}
+		if (output.length > maxListSize * 2) {
+			let tmp = output.filter((a) => a.followed_by.size >= MIN_MUTUAL_FOLLOWS_TO_SUGGEST);
+			if (tmp.length > 50) {
+				output = tmp;
 			}
-			if ($sortOrder === 'by-count') {
-				output.sort((a, b) => b.followed_by.size - a.followed_by.size);
-			} else if ($sortOrder === 'most-followers') {
-				output.sort((a, b) => b.followers_count - a.followers_count);
-			} else if ($sortOrder === 'least-followers') {
-				output.sort((a, b) => a.followers_count - b.followers_count);
-			} else {
-				output.sort(
-					(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
-				);
-			}
-			return output.slice(0, maxListSize);}
-	);
+		}
+		if ($sortOrder === 'by-count') {
+			output.sort((a, b) => b.followed_by.size - a.followed_by.size);
+		} else if ($sortOrder === 'most-followers') {
+			output.sort((a, b) => b.followers_count - a.followers_count);
+		} else if ($sortOrder === 'least-followers') {
+			output.sort((a, b) => a.followers_count - b.followers_count);
+		} else {
+			output.sort(
+				(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
+			);
+		}
+		return output.slice(0, maxListSize);
+	});
 
 	async function search() {
 		if (!AccountRegex.test(account)) {
@@ -119,8 +121,6 @@
 			pendingFetches--;
 		});
 	}
-
-
 </script>
 
 <svelte:window bind:innerWidth />

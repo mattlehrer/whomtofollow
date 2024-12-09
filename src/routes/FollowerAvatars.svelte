@@ -3,14 +3,17 @@
 	import type { Account } from '../lib/Account';
 	import { accountData } from '../lib/data.svelte';
 
-	let {account}: {account:Account} = $props();
+	let { account }: { account: Account } = $props();
 
 	const MAX_FOLLOWER_AVATARS = 10;
 
-	let followers = $derived([...account.followed_by].map((f) => accountData.get(f)).filter(isAccount));
+	let followers = $derived(
+		[...account.followed_by].map((f) => accountData.get(f)).filter(isAccount),
+	);
 
 	let followersToShow = $derived(
-		followers.length > MAX_FOLLOWER_AVATARS ? followers.slice(0, MAX_FOLLOWER_AVATARS) : followers);
+		followers.length > MAX_FOLLOWER_AVATARS ? followers.slice(0, MAX_FOLLOWER_AVATARS) : followers,
+	);
 
 	function isAccount(f: Account | undefined): f is Account {
 		return Boolean(f) && typeof f === 'object' && 'acct' in f;
