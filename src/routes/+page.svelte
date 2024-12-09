@@ -158,7 +158,7 @@
 	{/if}
 </main>
 {#if isLoading}
-	<div out:fade={{ duration: 2000 }} bind:this={progressNode} class="progress" />
+	<div out:fade={{ duration: 2000 }} bind:this={progressNode} class="progress"></div>
 {/if}
 
 <style>

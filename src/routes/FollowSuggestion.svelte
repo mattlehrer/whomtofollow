@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { debounce } from 'debounce';
+	import debounce from 'debounce';
 	import AccountDetails from './AccountDetails.svelte';
 	import type { Account } from '../lib/Account';
 	import { Timeout } from '$lib/utils/timeout';
@@ -25,7 +25,7 @@
 
 <article
 	class="mx-auto block max-w-7xl overflow-hidden"
-	on:mouseenter={debounce(updateInfo, 100000, true)}
+	on:mouseenter={debounce(updateInfo, 100000, { immediate: true })}
 >
 	<div
 		class="flex max-w-3xl flex-col items-start border-b border-slate-900 border-opacity-25 p-4 hover:bg-brand-100 sm:mx-4 md:mx-10 md:flex-row md:p-6"
