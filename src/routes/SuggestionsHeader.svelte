@@ -17,7 +17,10 @@
 				aria-label="Sort Order Options"
 				aria-expanded={isSettingsOpen}
 				aria-haspopup="true"
-				onclick={(e) => {e.stopPropagation(); isSettingsOpen = !isSettingsOpen}}
+				onclick={(e) => {
+					e.stopPropagation();
+					isSettingsOpen = !isSettingsOpen;
+				}}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +47,7 @@
 				aria-orientation="vertical"
 				aria-labelledby="sort-order-menu-button"
 				use:clickoutside
-				onclickoutside={() => isSettingsOpen = false}
+				onclickoutside={() => (isSettingsOpen = false)}
 			>
 				<div class="py-1" role="none">
 					<p class="mb-2 w-full text-center">Sort Order Options</p>
@@ -70,7 +73,10 @@
 									</span>
 								</span>
 								<span
-									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder === 'default' ? 'border-brand-600' : 'border-transparent'}"
+									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder ===
+									'default'
+										? 'border-brand-600'
+										: 'border-transparent'}"
 									aria-hidden="true"
 								></span>
 							</label>
@@ -92,7 +98,10 @@
 									</span>
 								</span>
 								<span
-									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder === 'by-count' ? 'border-brand-600' : 'border-transparent'}"
+									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder ===
+									'by-count'
+										? 'border-brand-600'
+										: 'border-transparent'}"
 									aria-hidden="true"
 								></span>
 							</label>
@@ -114,7 +123,10 @@
 									</span>
 								</span>
 								<span
-									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder === 'most-followers' ? 'border-brand-600' : 'border-transparent'}"
+									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder ===
+									'most-followers'
+										? 'border-brand-600'
+										: 'border-transparent'}"
 									aria-hidden="true"
 								></span>
 							</label>
@@ -136,7 +148,10 @@
 									</span>
 								</span>
 								<span
-									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder === 'least-followers' ? 'border-brand-600' : 'border-transparent'}"
+									class="pointer-events-none absolute -inset-px rounded-lg border-2 {sortOrder ===
+									'least-followers'
+										? 'border-brand-600'
+										: 'border-transparent'}"
 									aria-hidden="true"
 								></span>
 							</label>
