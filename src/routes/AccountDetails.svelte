@@ -3,10 +3,12 @@
 	import FollowerAvatars from './FollowerAvatars.svelte';
 	import type { Account } from '$lib/Account';
 
-	export let account: Account;
+	interface Props {
+		account: Account;
+	}
+
+	let { account }: Props = $props();
 	let emojis: string[][] = [];
-	$: codes = extractEmojis(account.display_name);
-	$: displayName = trimName(account.display_name, codes);
 
 	function extractEmojis(displayName: string) {
 		const SHORTCODE_REGEX = /:(.+?):/g;
@@ -29,6 +31,8 @@
 		displayName = displayName.trim();
 		return displayName;
 	}
+	let codes = $derived(extractEmojis(account.display_name));
+	let displayName = $derived(trimName(account.display_name, codes));
 </script>
 
 <div class="flex flex-col gap-4">

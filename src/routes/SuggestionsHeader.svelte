@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { clickoutside } from '@svelte-put/clickoutside';
 
-	export let sortOrder: 'default' | 'by-count' | 'most-followers' | 'least-followers' = 'default';
+	interface Props {
+		sortOrder?: 'default' | 'by-count' | 'most-followers' | 'least-followers';
+	}
 
-	let isSettingsOpen = false;
+	let { sortOrder = $bindable('default') }: Props = $props();
+
+	let isSettingsOpen = $state(false);
 </script>
 
 <div class="flex max-w-3xl items-center justify-between px-4 pb-4 pt-3 sm:mx-4 md:mx-10 md:px-6">

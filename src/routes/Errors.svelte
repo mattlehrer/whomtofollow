@@ -1,13 +1,17 @@
 <script lang="ts">
-	export let errors: Record<string, string[]> = {};
+	interface Props {
+		errors?: Record<string, string[]>;
+	}
 
-	$: errorCount = Object.entries(errors).reduce((sum, [, errors]) => sum + errors.length, 0);
-	let showErrors = false;
+	let { errors = {} }: Props = $props();
+
+	let errorCount = $derived(Object.entries(errors).reduce((sum, [, errors]) => sum + errors.length, 0));
+	let showErrors = $state(false);
 </script>
 
 <section class="mt-8 space-y-2 text-sm">
 	{#if errorCount > 0}
-		<button on:click={() => (showErrors = !showErrors)} class="text-slate-800">
+		<button onclick={() => (showErrors = !showErrors)} class="text-slate-800">
 			<span class="font-bold">{errorCount} error{errorCount > 1 ? 's' : ''}</span> occurred while fetching
 			data.
 		</button>

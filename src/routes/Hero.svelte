@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { AccountRegex } from '$lib/Account';
 	import distracted from '$lib/assets/distracted.jpg';
 
-	export let account: string;
-	export let isLoading: boolean;
+	interface Props {
+		account: string;
+		isLoading: boolean;
+	}
+
+	let { account = $bindable(), isLoading = $bindable() }: Props = $props();
 </script>
 
 <div class="relative">
@@ -21,7 +28,7 @@
 						<p class="text-base font-medium text-gray-900">
 							Enter your fediverse account to get started:
 						</p>
-						<form on:submit class="plausible-event-name=Search mt-3 sm:flex">
+						<form onsubmit={bubble('submit')} class="plausible-event-name=Search mt-3 sm:flex">
 							<label for="account" class="sr-only">Fediverse account</label>
 							<input
 								type="text"

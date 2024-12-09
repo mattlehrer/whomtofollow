@@ -1,9 +1,13 @@
 <script lang="ts">
 	import HideSocialGraph from '$lib/assets/hide-social-graph-setting.png';
 
-	export let host = 'mastodon.social';
+	interface Props {
+		host?: string; // TODO: change the copy and image based on server type
+	}
 
-	// TODO: change the copy and image based on server type
+	let { host = 'mastodon.social' }: Props = $props();
+
+	
 </script>
 
 <section class="max-w-[40rem] px-4 pb-8 sm:px-8 md:px-16">
