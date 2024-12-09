@@ -41,7 +41,7 @@
 
 	onMount(() => {
 		dontSuggest = new SvelteSet();
-		maxListSize = Math.floor(Math.min(innerWidth / 5, 75));
+		maxListSize = Math.floor(Math.max(innerWidth / 5, 75));
 	});
 
 	// not sure of a better way to make the accountData map reactive
