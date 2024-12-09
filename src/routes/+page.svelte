@@ -17,6 +17,7 @@
 	import Hero from './Hero.svelte';
 	import NoFollows from './NoFollows.svelte';
 	import SuggestionsHeader from './SuggestionsHeader.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	export let data: PageData;
 
@@ -26,7 +27,7 @@
 	let host: string;
 	let isLoading = false;
 	let noFollows = false;
-	let dontSuggest: Set<string>;
+	let dontSuggest: SvelteSet<string>;
 	let maxListSize = 75;
 	let innerWidth = 400;
 	const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
@@ -39,7 +40,7 @@
 	});
 
 	onMount(() => {
-		dontSuggest = new Set();
+		dontSuggest = new SvelteSet();
 		maxListSize = Math.floor(Math.min(innerWidth / 5, 75));
 	});
 
@@ -86,7 +87,7 @@
 
 		try {
 			const withoutAt = account.replace(/^@/, '').toLowerCase();
-			dontSuggest = new Set<string>([withoutAt]);
+			dontSuggest = new SvelteSet<string>([withoutAt]);
 			const following = await getFollows(withoutAt, withoutAt, true, 2000);
 			console.log(withoutAt, 'follows', following.length, 'accounts');
 
