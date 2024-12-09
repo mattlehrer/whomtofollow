@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { derived, writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
@@ -33,7 +33,7 @@
 		'default',
 	);
 
-	const phase1Progress = tweened(0, {
+	const phase1Progress = new Tween(0, {
 		duration: 5000,
 		easing: cubicOut,
 	});
@@ -80,7 +80,7 @@
 		}
 		isLoading = true;
 		noFollows = false;
-		$phase1Progress = 20;
+		phase1Progress.target = 20;
 		// dontSuggest.clear();
 		$accountData = new Map<string, Account>();
 
@@ -124,8 +124,8 @@
 	$: if (progressNode && pendingFetches && dontSuggest.size) {
 		pctDone = (80 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
 	}
-	$: if (pctDone || $phase1Progress)
-		progressNode?.style?.setProperty('--progress', pctDone + $phase1Progress + '%');
+	$: if (pctDone || phase1Progress.current)
+		progressNode?.style?.setProperty('--progress', pctDone + phase1Progress.current + '%');
 </script>
 
 <svelte:window bind:innerWidth />
