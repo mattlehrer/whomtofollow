@@ -3,6 +3,7 @@ import type { Account } from './Account';
 import { accountData, updateAccountData } from './data';
 import { getDomain } from './getDomain';
 import { Timeout } from './utils/timeout';
+import { SvelteSet } from 'svelte/reactivity';
 
 export async function getAccountInfo(acct: Account['acct'], force = false): Promise<Account> {
 	if (!force && get(accountData).has(acct)) {
@@ -58,7 +59,7 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 		while (accountInfo.moved) {
 			accountInfo = await getAccountInfo(accountInfo.moved.acct);
 		}
-		get(accountData).set(acct, { ...accountInfo, followed_by: new Set() });
+		get(accountData).set(acct, { ...accountInfo, followed_by: new SvelteSet() });
 		updateAccountData.update((b) => !b);
 	} catch (e) {
 		// console.log({ e });

@@ -3,6 +3,7 @@ import type { Account } from './Account';
 import { accountData, updateAccountData } from './data';
 import { getAccountInfo } from './getAccountInfo';
 import { getDomain } from './getDomain';
+import { SvelteSet } from 'svelte/reactivity';
 
 export async function saveAcctInfo({
 	accountToSave,
@@ -32,7 +33,7 @@ export async function saveAcctInfo({
 			accountData.update((d) =>
 				d.set(accountToSave.acct, {
 					...accountToSave,
-					followed_by: new Set([followedBy]),
+					followed_by: new SvelteSet([followedBy]),
 				}),
 			);
 			updateAccountData.update((b) => !b);
@@ -47,7 +48,7 @@ export async function saveAcctInfo({
 				accountData.update((d) =>
 					d.set(accountToSave.acct, {
 						...accountToSave,
-						followed_by: new Set([followedBy]),
+						followed_by: new SvelteSet([followedBy]),
 					}),
 				);
 				updateAccountData.update((b) => !b);
@@ -55,7 +56,7 @@ export async function saveAcctInfo({
 				try {
 					const fInfo = await getAccountInfo(accountToSave.acct);
 					accountData.update((d) =>
-						d.set(accountToSave.acct, { ...fInfo, followed_by: new Set([followedBy]) }),
+						d.set(accountToSave.acct, { ...fInfo, followed_by: new SvelteSet([followedBy]) }),
 					);
 					updateAccountData.update((b) => !b);
 				} catch (error) {

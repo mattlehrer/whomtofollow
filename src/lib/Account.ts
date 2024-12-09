@@ -1,3 +1,5 @@
+import type { SvelteSet } from 'svelte/reactivity';
+
 export const AccountRegex = /^@?[\w\-]+@[\w\-]+(\.[\w\-]+)+$/;
 
 // https://docs.joinmastodon.org/entities/Account/
@@ -27,7 +29,7 @@ export type Account = {
 	statuses_count: number;
 	followers_count: number;
 	following_count: number;
-	followed_by: Set<string>; // set of mutual followers
+	followed_by: SvelteSet<string>; // set of mutual followers
 	// following?: Array<string>; // list of accts
 };
 
