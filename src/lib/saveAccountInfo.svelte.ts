@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import type { Account } from './Account';
-import { accountData, updateAccountData } from './data';
+import { accountData, updateAccountData } from './data.svelte';
 import { getAccountInfo } from './getAccountInfo';
 import { getDomain } from './getDomain';
 import { SvelteSet } from 'svelte/reactivity';
@@ -14,28 +14,24 @@ export async function saveAcctInfo({
 	direct: boolean;
 	followedBy: Account['acct'];
 }) {
-	if (get(accountData).has(accountToSave.acct)) {
-		const account = get(accountData).get(accountToSave.acct);
+	if (accountData.has(accountToSave.acct)) {
+		const account = accountData.get(accountToSave.acct);
 		if (!account) {
 			throw new Error('account should exist');
 		}
-		accountData.update((d) =>
-			d.set(accountToSave.acct, {
+		accountData.set(accountToSave.acct, {
 				...account,
 				acct: accountToSave.acct,
 				followers_count: Math.max(account.followers_count, accountToSave.followers_count),
 				followed_by: account.followed_by.add(followedBy),
-			}),
-		);
+			});
 		updateAccountData.update((b) => !b);
 	} else {
 		if (!direct) {
-			accountData.update((d) =>
-				d.set(accountToSave.acct, {
+			accountData.set(accountToSave.acct, {
 					...accountToSave,
 					followed_by: new SvelteSet([followedBy]),
-				}),
-			);
+				});
 			updateAccountData.update((b) => !b);
 		} else {
 			// different servers use different account IDs
@@ -45,19 +41,15 @@ export async function saveAcctInfo({
 			const fDomain = accountToSave.url.match(/https?:\/\/([^/]+)/)?.[1];
 			const domain = await getDomain(followedBy);
 			if (domain === fDomain) {
-				accountData.update((d) =>
-					d.set(accountToSave.acct, {
+				accountData.set(accountToSave.acct, {
 						...accountToSave,
 						followed_by: new SvelteSet([followedBy]),
-					}),
-				);
+					});
 				updateAccountData.update((b) => !b);
 			} else {
 				try {
 					const fInfo = await getAccountInfo(accountToSave.acct);
-					accountData.update((d) =>
-						d.set(accountToSave.acct, { ...fInfo, followed_by: new SvelteSet([followedBy]) }),
-					);
+					accountData.set(accountToSave.acct, { ...fInfo, followed_by: new SvelteSet([followedBy]) });					
 					updateAccountData.update((b) => !b);
 				} catch (error) {
 					console.debug('Problem getting account info for', accountToSave.acct);

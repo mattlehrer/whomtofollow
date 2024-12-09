@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Account } from './Account';
+import { SvelteMap } from 'svelte/reactivity';
 
-export const accountData = writable(new Map<string, Account>());
+export const accountData = new SvelteMap<string, Account>();
 
 export const hosts = writable(new Map<string, string>());
 

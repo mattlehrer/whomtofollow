@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { accountData, hosts } from './data';
+import { accountData, hosts } from './data.svelte';
 import { Timeout } from './utils/timeout';
 
 export async function getDomain(acct: string): Promise<string> {
@@ -10,8 +10,8 @@ export async function getDomain(acct: string): Promise<string> {
 		return get(hosts).get(server)!;
 	}
 
-	if (get(accountData).has(acct)) {
-		const account = get(accountData).get(acct);
+	if (accountData.has(acct)) {
+		const account = accountData.get(acct);
 		if (account?.url) {
 			const match = account.url.match(/^https?:\/\/([\w-]+(\.[\w-]+)+)/);
 			if (match?.length === 3) {

@@ -1,14 +1,14 @@
 import { get } from 'svelte/store';
 import type { Account } from './Account';
-import { accountData, updateAccountData } from './data';
+import { accountData, updateAccountData } from './data.svelte';
 import { getDomain } from './getDomain';
 import { Timeout } from './utils/timeout';
 import { SvelteSet } from 'svelte/reactivity';
 
 export async function getAccountInfo(acct: Account['acct'], force = false): Promise<Account> {
-	if (!force && get(accountData).has(acct)) {
+	if (!force && accountData.has(acct)) {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		return get(accountData).get(acct)!;
+		return accountData.get(acct)!;
 	}
 	let accountInfo: Account & { error?: string; error_description?: string };
 	try {
@@ -59,7 +59,7 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 		while (accountInfo.moved) {
 			accountInfo = await getAccountInfo(accountInfo.moved.acct);
 		}
-		get(accountData).set(acct, { ...accountInfo, followed_by: new SvelteSet() });
+		accountData.set(acct, { ...accountInfo, followed_by: new SvelteSet() });
 		updateAccountData.update((b) => !b);
 	} catch (e) {
 		// console.log({ e });

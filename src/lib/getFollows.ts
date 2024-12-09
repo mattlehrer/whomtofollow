@@ -1,8 +1,8 @@
 import type { Account } from './Account';
 import { getAccountInfo } from './getAccountInfo';
-import { saveAcctInfo } from './saveAccountInfo';
+import { saveAcctInfo } from './saveAccountInfo.svelte';
 import { fulfilledValues } from './utils/promises';
-import { errors } from './data';
+import { errors } from './data.svelte';
 import { get } from 'svelte/store';
 import { getDomain } from './getDomain';
 import { Timeout } from './utils/timeout';

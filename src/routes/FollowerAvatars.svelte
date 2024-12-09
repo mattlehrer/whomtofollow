@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import type { Account } from '../lib/Account';
-	import { accountData } from '../lib/data';
+	import { accountData } from '../lib/data.svelte';
 
-	export let account: Account;
+	let {account}: {account:Account} = $props();
 
 	const MAX_FOLLOWER_AVATARS = 10;
 
-	$: followers = [...account.followed_by].map((f) => $accountData.get(f)).filter(isAccount);
+	let followers = $derived([...account.followed_by].map((f) => accountData.get(f)).filter(isAccount));
 
-	$: followersToShow =
-		followers.length > MAX_FOLLOWER_AVATARS ? followers.slice(0, MAX_FOLLOWER_AVATARS) : followers;
+	let followersToShow = $derived(
+		followers.length > MAX_FOLLOWER_AVATARS ? followers.slice(0, MAX_FOLLOWER_AVATARS) : followers);
 
 	function isAccount(f: Account | undefined): f is Account {
 		return Boolean(f) && typeof f === 'object' && 'acct' in f;
 	}
-	let showFollowers = false;
+	let showFollowers = $state(false);
 </script>
 
-<button on:click={() => (showFollowers = !showFollowers)} class="mt-3 flex">
+<button onclick={() => (showFollowers = !showFollowers)} class="mt-3 flex">
 	<div class="flex-shrink-0">
 		<div class="flex -space-x-1 overflow-hidden">
 			{#each followersToShow as follower}

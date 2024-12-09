@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
-	import { derived, writable } from 'svelte/store';
+	import { derived as derivedStore, writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
 	import type { PageData } from './$types';
 	import { AccountRegex, type Account } from '$lib/Account';
-	import { accountData, errors, updateAccountData } from '$lib/data';
+	import { accountData, errors, updateAccountData } from '$lib/data.svelte';
 	import { fulfilledValues } from '$lib/utils/promises';
 	import { getDomain } from '$lib/getDomain';
 	import { getFollows } from '$lib/getFollows';
@@ -17,19 +16,19 @@
 	import Hero from './Hero.svelte';
 	import NoFollows from './NoFollows.svelte';
 	import SuggestionsHeader from './SuggestionsHeader.svelte';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
-	export let data: PageData;
+	let {data}: {data:PageData} = $props();
 
 	const MIN_MUTUAL_FOLLOWS_TO_SUGGEST = 3;
 
-	let account: string = data.account;
-	let host: string;
-	let isLoading = false;
-	let noFollows = false;
-	let dontSuggest: SvelteSet<string>;
-	let maxListSize = 75;
-	let innerWidth = 400;
+	let account: string = $state(data.account);
+	let host: string = $state('');
+	let isLoading = $state(false);
+	let noFollows = $state(false);
+	let dontSuggest: SvelteSet<string> = new SvelteSet();
+	let maxListSize = $state(75);
+	let innerWidth = $state(400);
 	const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
 		'default',
 	);
@@ -39,16 +38,20 @@
 		easing: cubicOut,
 	});
 
-	onMount(() => {
-		dontSuggest = new SvelteSet();
+	$effect(() => {
 		maxListSize = Math.floor(Math.max(innerWidth / 5, 75));
 	});
 
+	let pendingFetches = $state(0);
+	let progressNode: HTMLElement | null = $state(null);
+	const pctDone = $derived(dontSuggest ? (80 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1) : 0);
+	$effect(() => {
+		progressNode?.style?.setProperty('--progress', pctDone + phase1Progress.current + '%');
+	});
+
 	// not sure of a better way to make the accountData map reactive
-	const accountsYouMightFollow = derived(
-		[accountData, updateAccountData, sortOrder],
-		([$accountData]) => {
-			let output = [...$accountData.entries()]
+	const accountsYouMightFollow = $derived.by(() => {
+			let output = [...accountData.entries()]
 				.filter(([acct]) => !dontSuggest?.has(acct.toLowerCase()))
 				.map((a) => a[1])
 				.filter((a) => a.followed_by.size / a.followers_count <= 1);
@@ -70,9 +73,7 @@
 					(a, b) => b.followed_by.size / b.followers_count - a.followed_by.size / a.followers_count,
 				);
 			}
-			output = output.slice(0, maxListSize);
-			return output;
-		},
+			return output.slice(0, maxListSize);}
 	);
 
 	async function search() {
@@ -83,7 +84,7 @@
 		noFollows = false;
 		phase1Progress.target = 20;
 		// dontSuggest.clear();
-		$accountData = new Map<string, Account>();
+		accountData.clear();
 
 		try {
 			const withoutAt = account.replace(/^@/, '').toLowerCase();
@@ -112,7 +113,6 @@
 		isLoading = false;
 	}
 
-	let pendingFetches = 0;
 	async function trackProgress<T>(p: Promise<T>): Promise<T> {
 		pendingFetches++;
 		return p.finally(() => {
@@ -120,19 +120,13 @@
 		});
 	}
 
-	let progressNode: HTMLElement;
-	let pctDone = 0;
-	$: if (progressNode && pendingFetches && dontSuggest.size) {
-		pctDone = (80 * (dontSuggest.size - 1 - pendingFetches)) / (dontSuggest.size - 1);
-	}
-	$: if (pctDone || phase1Progress.current)
-		progressNode?.style?.setProperty('--progress', pctDone + phase1Progress.current + '%');
+
 </script>
 
 <svelte:window bind:innerWidth />
 
 <main>
-	{#if !$accountsYouMightFollow.length}
+	{#if !accountsYouMightFollow.length}
 		<div class="mx-auto flex h-full max-w-7xl flex-col justify-between">
 			<Hero bind:account bind:isLoading on:submit={search} />
 			{#if noFollows}
@@ -145,7 +139,7 @@
 			<Hero bind:account bind:isLoading on:submit={search} />
 			<SuggestionsHeader bind:sortOrder={$sortOrder} />
 		</div>
-		{#each $accountsYouMightFollow as suggestion (suggestion.acct)}
+		{#each accountsYouMightFollow as suggestion (suggestion.acct)}
 			<FollowSuggestion account={suggestion} {host} />
 		{/each}
 		<div class="mx-auto max-w-7xl">

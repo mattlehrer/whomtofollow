@@ -1,9 +1,11 @@
 <script>
 	import '../app.postcss';
+
+	let { children } = $props();
 </script>
 
 <div class="min-h-full">
-	<slot />
+	{@render children?.()}
 </div>
 
 <style>
