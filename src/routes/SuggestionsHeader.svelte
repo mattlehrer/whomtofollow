@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { clickoutside } from '@svelte-put/clickoutside';
+
 	export let sortOrder: 'default' | 'by-count' | 'most-followers' | 'least-followers' = 'default';
 
 	let isSettingsOpen = false;
@@ -15,7 +17,7 @@
 				aria-label="Sort Order Options"
 				aria-expanded={isSettingsOpen}
 				aria-haspopup="true"
-				onclick={()=>isSettingsOpen = !isSettingsOpen}
+				onclick={(e) => {e.stopPropagation(); isSettingsOpen = !isSettingsOpen}}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -41,6 +43,8 @@
 				role="menu"
 				aria-orientation="vertical"
 				aria-labelledby="sort-order-menu-button"
+				use:clickoutside
+				onclickoutside={() => isSettingsOpen = false}
 			>
 				<div class="py-1" role="none">
 					<p class="mb-2 w-full text-center">Sort Order Options</p>
