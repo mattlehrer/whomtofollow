@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
-	import { derived as derivedStore, writable } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
 	import type { PageData } from './$types';
@@ -16,7 +16,7 @@
 	import Hero from './Hero.svelte';
 	import NoFollows from './NoFollows.svelte';
 	import SuggestionsHeader from './SuggestionsHeader.svelte';
-	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	let { data }: { data: PageData } = $props();
 
@@ -29,9 +29,12 @@
 	let dontSuggest: SvelteSet<string> = new SvelteSet();
 	let maxListSize = $state(75);
 	let innerWidth = $state(400);
-	const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
+	let sortOrder = $state<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
 		'default',
 	);
+	// const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
+	// 	'default',
+	// );
 
 	const phase1Progress = new Tween(0, {
 		duration: 5000,
@@ -64,11 +67,11 @@
 				output = tmp;
 			}
 		}
-		if ($sortOrder === 'by-count') {
+		if (sortOrder === 'by-count') {
 			output.sort((a, b) => b.followed_by.size - a.followed_by.size);
-		} else if ($sortOrder === 'most-followers') {
+		} else if (sortOrder === 'most-followers') {
 			output.sort((a, b) => b.followers_count - a.followers_count);
-		} else if ($sortOrder === 'least-followers') {
+		} else if (sortOrder === 'least-followers') {
 			output.sort((a, b) => a.followers_count - b.followers_count);
 		} else {
 			output.sort(
@@ -128,7 +131,7 @@
 <main>
 	{#if !accountsYouMightFollow.length}
 		<div class="mx-auto flex h-full max-w-7xl flex-col justify-between">
-			<Hero bind:account bind:isLoading on:submit={search} />
+			<Hero bind:account bind:isLoading {search} />
 			{#if noFollows}
 				<NoFollows />
 			{/if}
@@ -136,8 +139,8 @@
 		</div>
 	{:else}
 		<div class="mx-auto max-w-7xl">
-			<Hero bind:account bind:isLoading on:submit={search} />
-			<SuggestionsHeader bind:sortOrder={$sortOrder} />
+			<Hero bind:account bind:isLoading {search} />
+			<SuggestionsHeader bind:sortOrder />
 		</div>
 		{#each accountsYouMightFollow as suggestion (suggestion.acct)}
 			<FollowSuggestion account={suggestion} {host} />
