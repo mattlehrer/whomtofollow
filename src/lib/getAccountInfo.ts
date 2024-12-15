@@ -4,23 +4,21 @@ import { accountData, updateAccountData } from './data.svelte';
 import { getDomain } from './getDomain';
 import { Timeout } from './utils/timeout';
 import { SvelteSet } from 'svelte/reactivity';
+import { rateLimitedFetch } from './utils/rateLimitedFetch';
 
 export async function getAccountInfo(acct: Account['acct'], force = false): Promise<Account> {
 	if (!force && accountData.has(acct)) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return accountData.get(acct)!;
 	}
 	let accountInfo: Account & { error?: string; error_description?: string };
 	try {
 		const domain = await getDomain(acct);
-		let accountInfoRes = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${acct}`, {
-			signal: Timeout(5000).signal,
-		});
+		let accountInfoRes = await rateLimitedFetch.fetch(
+			`https://${domain}/api/v1/accounts/lookup?acct=${acct}`,
+		);
 		if (!accountInfoRes.ok) {
 			if (accountInfoRes.type === 'cors') {
-				accountInfoRes = await fetch(`/api/acct/${acct}`, {
-					signal: Timeout(5000).signal,
-				});
+				accountInfoRes = await rateLimitedFetch.fetch(`/api/acct/${acct}`);
 			}
 		}
 		if (!accountInfoRes.ok) {
@@ -32,16 +30,16 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 		if (accountInfo.error === "Can't find user") {
 			// Pleroma error = "Can't find user"
 			const nickname = acct.split('@')[0];
-			const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-				signal: Timeout(5000).signal,
-			});
+			const nonMastodonInfoRes = await rateLimitedFetch.fetch(
+				`https://${domain}/api/v1/accounts/${nickname}`,
+			);
 			accountInfo = await nonMastodonInfoRes.json();
 		} else if (accountInfo.error === "Couldn't find user") {
 			// Rebased (Pleroma fork) error = "Couldn't find user"
 			const nickname = acct.split('@')[0];
-			const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-				signal: Timeout(5000).signal,
-			});
+			const nonMastodonInfoRes = await rateLimitedFetch.fetch(
+				`https://${domain}/api/v1/accounts/${nickname}`,
+			);
 			accountInfo = await nonMastodonInfoRes.json();
 		} else if (
 			accountInfo.error_description ===
@@ -50,9 +48,9 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 		) {
 			console.log('Friendica');
 			const nickname = acct.split('@')[0];
-			const nonMastodonInfoRes = await fetch(`https://${domain}/api/v1/accounts/${nickname}`, {
-				signal: Timeout(5000).signal,
-			});
+			const nonMastodonInfoRes = await rateLimitedFetch.fetch(
+				`https://${domain}/api/v1/accounts/${nickname}`,
+			);
 			accountInfo = await nonMastodonInfoRes.json();
 		}
 

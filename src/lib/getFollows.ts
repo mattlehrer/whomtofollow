@@ -4,7 +4,7 @@ import { saveAcctInfo } from './saveAccountInfo.svelte';
 import { fulfilledValues } from './utils/promises';
 import { errors } from './data.svelte';
 import { getDomain } from './getDomain';
-import { Timeout } from './utils/timeout';
+import { rateLimitedFetch } from './utils/rateLimitedFetch';
 
 const DEFAULT_MAX_FOLLOWERS_TO_FETCH = 500;
 
@@ -51,9 +51,7 @@ export async function getFollows(
 		// console.log('paging', { page, followsLength: follows.length, maxFollowersToFetch });
 		let response;
 		try {
-			response = await fetch(page, {
-				signal: Timeout(5000).signal,
-			});
+			response = await rateLimitedFetch.fetch(page);
 		} catch (e: unknown) {
 			// console.log({ e });
 			if (e instanceof Error) {

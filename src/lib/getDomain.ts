@@ -1,4 +1,5 @@
 import { accountData, hosts } from './data.svelte';
+import { rateLimitedFetch } from './utils/rateLimitedFetch';
 import { Timeout } from './utils/timeout';
 
 export async function getDomain(acct: string): Promise<string> {
@@ -27,11 +28,8 @@ export async function getDomain(acct: string): Promise<string> {
 	const domain = match[2];
 
 	try {
-		const webfingerResp = await fetch(
+		const webfingerResp = await rateLimitedFetch.fetch(
 			`https://${domain}/.well-known/webfinger?resource=acct:${acct}`,
-			{
-				signal: Timeout(5000).signal,
-			},
 		);
 		const webfinger = await webfingerResp.json();
 		const links = webfinger.links;
@@ -49,13 +47,11 @@ export async function getDomain(acct: string): Promise<string> {
 		const acctUrl = new URL(acctLink.href);
 		hosts.set(server, acctUrl.host);
 		return acctUrl.host;
-	} catch (error) {
-		// console.log('getDomain', error, acct);
+	} catch (error: unknown) {
+		console.debug('getDomain', error, acct);
 	}
 	try {
-		const webfingerResp = await fetch(`/api/webfinger/${domain}/${acct}`, {
-			signal: Timeout(5000).signal,
-		});
+		const webfingerResp = await rateLimitedFetch.fetch(`/api/webfinger/${domain}/${acct}`);
 		const acctLinkHref = await webfingerResp.text();
 		console.log({ acctLinkHref });
 		const acctUrl = new URL(acctLinkHref);

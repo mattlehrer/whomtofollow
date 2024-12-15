@@ -3,6 +3,7 @@
 	import AccountDetails from './AccountDetails.svelte';
 	import type { Account } from '../lib/Account';
 	import { Timeout } from '$lib/utils/timeout';
+	import { rateLimitedFetch } from '$lib/utils/rateLimitedFetch';
 
 	interface Props {
 		account: Account;
@@ -15,9 +16,9 @@
 
 	async function updateInfo() {
 		try {
-			const res = await fetch(`https://${domain}/api/v1/accounts/lookup?acct=${account.acct}`, {
-				signal: Timeout(5000).signal,
-			});
+			const res = await rateLimitedFetch.fetch(
+				`https://${domain}/api/v1/accounts/lookup?acct=${account.acct}`,
+			);
 			const updatedAccount = await res.json();
 			account.followers_count = updatedAccount.followers_count;
 			account.id = updatedAccount.id;
