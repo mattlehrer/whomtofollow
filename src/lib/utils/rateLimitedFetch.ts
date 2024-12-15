@@ -1,5 +1,7 @@
 import { Timeout } from './timeout';
 
+const unimplementedDomains = ['threads.net'];
+
 class RateLimitManager {
 	rateLimitedDomains: Set<string>;
 	cooldownPeriod: number;
@@ -42,6 +44,10 @@ class RateLimitManager {
 		// Check if domain is currently rate-limited
 		if (this.isRateLimited(url)) {
 			throw new Error(`Domain ${new URL(url).hostname} is currently rate-limited`);
+		}
+
+		if (unimplementedDomains.includes(new URL(url).hostname)) {
+			throw new Error(`Service at ${new URL(url).hostname} is not implemented`);
 		}
 
 		try {
