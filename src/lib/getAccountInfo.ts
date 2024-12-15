@@ -57,8 +57,8 @@ export async function getAccountInfo(acct: Account['acct'], force = false): Prom
 		}
 		accountData.set(acct, { ...accountInfo, followed_by: new SvelteSet() });
 		updateAccountData.update((b) => !b);
-	} catch (e) {
-		// console.log({ e });
+	} catch (e: unknown) {
+		console.debug({ e });
 		throw new Error(`Error getting ${acct} info`);
 	}
 	return accountInfo;

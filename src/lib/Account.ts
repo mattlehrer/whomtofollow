@@ -1,5 +1,6 @@
 import type { SvelteSet } from 'svelte/reactivity';
 
+// eslint-disable-next-line no-useless-escape
 export const AccountRegex = /^@?[\w\-]+@[\w\-]+(\.[\w\-]+)+$/;
 
 // https://docs.joinmastodon.org/entities/Account/

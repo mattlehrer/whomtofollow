@@ -28,12 +28,13 @@ export async function getFollows(
 	let accountInfo;
 	try {
 		accountInfo = await getAccountInfo(ofAcct);
-	} catch (error: any) {
-		if (error?.status) {
-			if (errors[error.status]) {
-				errors[error.status] = [...errors[error.status], ofAcct];
+	} catch (error: unknown) {
+		if (typeof error === 'object' && error !== null && 'status' in error) {
+			const status = String(error.status);
+			if (errors[status]) {
+				errors[status] = [...errors[status], ofAcct];
 			} else {
-				errors[error.status] = [ofAcct];
+				errors[status] = [ofAcct];
 			}
 		}
 		return [];

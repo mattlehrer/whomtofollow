@@ -24,7 +24,8 @@ export const GET: RequestHandler = async ({ params }) => {
 			return new Response(`No activity pub link for ${acct}`, { status: 404 });
 		}
 		return new Response(acctLink.href);
-	} catch (e) {
+	} catch (e: unknown) {
+		console.debug('webfinger', e);
 		return new Response(`Failed to fetch webfinger data for ${acct}`, { status: 404 });
 	}
 };

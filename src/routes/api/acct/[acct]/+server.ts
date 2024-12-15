@@ -20,7 +20,8 @@ export const GET: RequestHandler = async ({ params, fetch }) => {
 		}
 
 		return new Response(JSON.stringify(accountInfo));
-	} catch (error) {
+	} catch (error: unknown) {
+		console.debug('lookup', params.acct, error);
 		if (accountInfoRes.status === 404) {
 			return new Response('Not found', { status: 404 });
 		} else {

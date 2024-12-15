@@ -2,7 +2,6 @@
 	import debounce from 'debounce';
 	import AccountDetails from './AccountDetails.svelte';
 	import type { Account } from '../lib/Account';
-	import { Timeout } from '$lib/utils/timeout';
 	import { rateLimitedFetch } from '$lib/utils/rateLimitedFetch';
 
 	interface Props {

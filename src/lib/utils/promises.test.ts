@@ -4,7 +4,7 @@ import { fulfilledValues } from './promises';
 describe('test whomtofollow', function () {
 	it('test fulfilledValues', function () {
 		const promises: Promise<string>[] = [
-			new Promise<string>((resolve, reject) => {
+			new Promise<string>((resolve) => {
 				setTimeout(() => {
 					resolve('success');
 				}, 2000);

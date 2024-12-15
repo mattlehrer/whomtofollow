@@ -1,6 +1,5 @@
 import { accountData, hosts } from './data.svelte';
 import { rateLimitedFetch } from './utils/rateLimitedFetch';
-import { Timeout } from './utils/timeout';
 
 export async function getDomain(acct: string): Promise<string> {
 	const server = acct.split('@')[1];

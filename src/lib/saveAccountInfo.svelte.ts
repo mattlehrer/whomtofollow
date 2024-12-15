@@ -1,4 +1,3 @@
-import { get } from 'svelte/store';
 import type { Account } from './Account';
 import { accountData, updateAccountData } from './data.svelte';
 import { getAccountInfo } from './getAccountInfo';
@@ -54,7 +53,8 @@ export async function saveAcctInfo({
 						followed_by: new SvelteSet([followedBy]),
 					});
 					updateAccountData.update((b) => !b);
-				} catch (error) {
+				} catch (error: unknown) {
+					console.debug('saveAccountInfo', error);
 					console.debug('Problem getting account info for', accountToSave.acct);
 				}
 			}
