@@ -5,7 +5,9 @@
 
 	let { errors = {} }: Props = $props();
 
-	let errorCount = $derived(Object.entries(errors).reduce((sum, [, errors]) => sum + errors.length, 0));
+	let errorCount = $derived(
+		Object.entries(errors).reduce((sum, [, errors]) => sum + errors.length, 0),
+	);
 	let showErrors = $state(false);
 </script>
 
