@@ -15,6 +15,12 @@ importers:
         specifier: ^2.13.1
         version: 2.13.1
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.2.0
+        version: 3.2.0
+      '@eslint/js':
+        specifier: ^9.17.0
+        version: 9.17.0
       '@playwright/test':
         specifier: ^1.49.0
         version: 1.49.0
@@ -57,6 +63,9 @@ importers:
       eslint-plugin-svelte:
         specifier: ^2.46.1
         version: 2.46.1(eslint@9.16.0(jiti@1.21.6))(svelte@5.9.0)
+      globals:
+        specifier: ^15.13.0
+        version: 15.13.0
       postcss:
         specifier: ^8.4.49
         version: 8.4.49
@@ -600,6 +609,10 @@ packages:
 
   '@eslint/js@9.16.0':
     resolution: {integrity: sha512-tw2HxzQkrbeuvyj1tG2Yqq+0H9wGoI2IMk4EOsQeX+vmd75FtJAzf+gTA69WF+baUKRYQ3x2kbLE08js5OsTVg==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@eslint/js@9.17.0':
+    resolution: {integrity: sha512-Sxc4hqcs1kTu0iID3kcZDW3JHq2a77HO9P8CP6YEA/FpH3Ll8UXE2r/86Rz9YJLKme39S9vU5OWNjC6Xl0Cr3w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/object-schema@2.1.5':
@@ -1458,6 +1471,10 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
+    engines: {node: '>=18'}
+
+  globals@15.13.0:
+    resolution: {integrity: sha512-49TewVEz0UxZjr1WYYsWpPrhyC/B/pA8Bq0fUmet2n+eR7yn0IvNzNaoBwnK6mdkzcN+se7Ez9zUgULTz2QH4g==}
     engines: {node: '>=18'}
 
   globalyzer@0.1.0:
@@ -2708,6 +2725,8 @@ snapshots:
 
   '@eslint/js@9.16.0': {}
 
+  '@eslint/js@9.17.0': {}
+
   '@eslint/object-schema@2.1.5': {}
 
   '@eslint/plugin-kit@0.2.4':
@@ -3603,6 +3622,8 @@ snapshots:
       path-scurry: 1.11.1
 
   globals@14.0.0: {}
+
+  globals@15.13.0: {}
 
   globalyzer@0.1.0: {}
 
