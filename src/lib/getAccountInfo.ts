@@ -1,8 +1,6 @@
-import { get } from 'svelte/store';
 import type { Account } from './Account';
 import { accountData, updateAccountData } from './data.svelte';
 import { getDomain } from './getDomain';
-import { Timeout } from './utils/timeout';
 import { SvelteSet } from 'svelte/reactivity';
 import { rateLimitedFetch } from './utils/rateLimitedFetch';
 
