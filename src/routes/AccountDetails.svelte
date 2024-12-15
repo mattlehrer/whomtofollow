@@ -1,7 +1,13 @@
 <script lang="ts">
-	import sanitize from 'sanitize-html';
+	// import sanitize from 'sanitize-html';
 	import FollowerAvatars from './FollowerAvatars.svelte';
 	import type { Account } from '$lib/Account';
+	// import { JSDOM } from 'jsdom';
+	import DOMPurify from 'dompurify';
+
+	// const window = new JSDOM('').window;
+	// const purify = DOMPurify(window);
+	// const { sanitize } = purify;
 
 	interface Props {
 		account: Account;
@@ -115,7 +121,9 @@
 		</p>
 	</div>
 	{#if account.note}
-		<p class="h-auto w-full text-base text-slate-900 opacity-85">{@html sanitize(account.note)}</p>
+		<p class="h-auto w-full text-base text-slate-900 opacity-85">
+			{@html DOMPurify.sanitize(account.note)}
+		</p>
 	{/if}
 	<FollowerAvatars {account} />
 </div>
