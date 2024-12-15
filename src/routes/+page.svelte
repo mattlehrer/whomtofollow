@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
-	import { writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
 	import type { PageData } from './$types';
-	import { AccountRegex, type Account } from '$lib/Account';
-	import { accountData, errors, updateAccountData } from '$lib/data.svelte';
+	import { AccountRegex } from '$lib/Account';
+	import { accountData, errors } from '$lib/data.svelte';
 	import { fulfilledValues } from '$lib/utils/promises';
 	import { getDomain } from '$lib/getDomain';
 	import { getFollows } from '$lib/getFollows';
@@ -29,9 +28,7 @@
 	let dontSuggest: SvelteSet<string> = new SvelteSet();
 	let maxListSize = $state(75);
 	let innerWidth = $state(400);
-	let sortOrder = $state<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
-		'default',
-	);
+	let sortOrder = $state<'default' | 'by-count' | 'most-followers' | 'least-followers'>('default');
 	// const sortOrder = writable<'default' | 'by-count' | 'most-followers' | 'least-followers'>(
 	// 	'default',
 	// );
@@ -54,7 +51,6 @@
 		progressNode?.style?.setProperty('--progress', pctDone + phase1Progress.current + '%');
 	});
 
-	// not sure of a better way to make the accountData map reactive
 	const accountsYouMightFollow = $derived.by(() => {
 		let output = [...accountData.entries()]
 			.filter(([acct]) => !dontSuggest?.has(acct.toLowerCase()))
@@ -142,13 +138,13 @@
 			<Hero bind:account bind:isLoading {search} />
 			<SuggestionsHeader bind:sortOrder />
 		</div>
-		{#each accountsYouMightFollow as suggestion (suggestion.acct)}
+		{#each accountsYouMightFollow as suggestion (suggestion)}
 			<FollowSuggestion account={suggestion} {host} />
 		{/each}
 		<div class="mx-auto max-w-7xl">
 			<div class="max-w-4xl p-4 sm:p-8 md:px-20">
 				{#if Object.keys(errors).length}
-					<Errors errors={$errors} />
+					<Errors {errors} />
 				{/if}
 			</div>
 			<Footer />

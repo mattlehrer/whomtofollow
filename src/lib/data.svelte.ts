@@ -4,8 +4,8 @@ import { SvelteMap } from 'svelte/reactivity';
 
 export const accountData = new SvelteMap<string, Account>();
 
-export const hosts = writable(new Map<string, string>());
+export const hosts = new SvelteMap<string, string>();
 
 export const updateAccountData = writable(false);
 
-export const errors = writable<Record<string, string[]>>({});
+export const errors = $state<Record<string, string[]>>({});

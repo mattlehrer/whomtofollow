@@ -3,7 +3,6 @@ import { getAccountInfo } from './getAccountInfo';
 import { saveAcctInfo } from './saveAccountInfo.svelte';
 import { fulfilledValues } from './utils/promises';
 import { errors } from './data.svelte';
-import { get } from 'svelte/store';
 import { getDomain } from './getDomain';
 import { Timeout } from './utils/timeout';
 
@@ -31,10 +30,10 @@ export async function getFollows(
 		accountInfo = await getAccountInfo(ofAcct);
 	} catch (error: any) {
 		if (error?.status) {
-			if (get(errors)[error.status]) {
-				errors.update((e) => ({ ...e, [error.status]: [...e[error.status], ofAcct] }));
+			if (errors[error.status]) {
+				errors[error.status] = [...errors[error.status], ofAcct];
 			} else {
-				errors.update((e) => ({ ...e, [error.status]: [ofAcct] }));
+				errors[error.status] = [ofAcct];
 			}
 		}
 		return [];
@@ -70,10 +69,10 @@ export async function getFollows(
 			// if 404, check webfinger, then request acct info to get correct account id
 			// https://docs.joinmastodon.org/spec/webfinger/
 			const status = String(response.status);
-			if (get(errors)[status]) {
-				errors.update((e) => ({ ...e, [status]: [...e[status], ofAcct] }));
+			if (errors[status]) {
+				errors[status] = [...errors[status], ofAcct];
 			} else {
-				errors.update((e) => ({ ...e, [status]: [ofAcct] }));
+				errors[status] = [ofAcct];
 			}
 			return follows;
 		}

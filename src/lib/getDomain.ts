@@ -1,13 +1,12 @@
-import { get } from 'svelte/store';
 import { accountData, hosts } from './data.svelte';
 import { Timeout } from './utils/timeout';
 
 export async function getDomain(acct: string): Promise<string> {
 	const server = acct.split('@')[1];
-	if (get(hosts).has(server)) {
+	if (hosts.has(server)) {
 		// assume that all other users with the same domain are on the same server
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		return get(hosts).get(server)!;
+
+		return hosts.get(server)!;
 	}
 
 	if (accountData.has(acct)) {
@@ -48,7 +47,7 @@ export async function getDomain(acct: string): Promise<string> {
 			throw new Error(`No activity pub link for ${acct}`);
 		}
 		const acctUrl = new URL(acctLink.href);
-		get(hosts).set(server, acctUrl.host);
+		hosts.set(server, acctUrl.host);
 		return acctUrl.host;
 	} catch (error) {
 		// console.log('getDomain', error, acct);
@@ -60,7 +59,7 @@ export async function getDomain(acct: string): Promise<string> {
 		const acctLinkHref = await webfingerResp.text();
 		console.log({ acctLinkHref });
 		const acctUrl = new URL(acctLinkHref);
-		get(hosts).set(server, acctUrl.host);
+		hosts.set(server, acctUrl.host);
 		return acctUrl.host;
 	} catch (error) {
 		console.debug('getDomain webfinger', error, acct);
